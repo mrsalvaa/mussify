@@ -2,6 +2,22 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.5.0] - 2026-10-22
+
+### Agregado
+- **Reconocer notas de oído, sin referencia**, integrado en las lecciones de lectura (no es una lección aparte). Crece con lo aprendido: con una sola nota conocida es "¿esto es Sol?"; con pocas, se elige entre dos notas bien distintas; después entre tres o cuatro, cada vez más cercanas; y cuando ya se conocen las alteraciones, la nota suena en cualquier octava. Las notas que más se fallan aparecen más. También hay una práctica "Notas de oído".
+- **Tocar el pentagrama**: ejercicios nuevos donde se toca una línea o un espacio ("Tocá dónde va Sol en clave de Sol", "Tocá la línea 2"). Funcionan con el mouse, el dedo o las flechas + Enter. Si te equivocás, se ve dónde tocaste y dónde iba.
+- "¿En qué línea o espacio está esta nota?", otro enfoque para las lecciones de lectura.
+- Octavas: "¿a cuántas octavas de distancia?" y "¿qué nota está 2 octavas abajo de Re5?", con notas, registros y distancias de 1 a 3 octavas al azar.
+
+### Cambiado
+- **Más variedad en las sesiones**: una pregunta no se repite nunca dos veces seguidas, cada pregunta aparece una sola vez por sesión (dos, solo si no hay material suficiente), no hay más de dos ejercicios seguidos del mismo tipo y no se repiten los mismos sonidos en preguntas cercanas. Vale para lecciones, repasos y prácticas.
+- Las preguntas de octava ya no son siempre entre las octavas 4 y 5: varían la nota, el registro y la distancia.
+- La lección "Sol en clave de Sol" (la primera nota) ya no son diez veces la misma pregunta: mezcla leer, ubicar en el pentagrama, decir la línea y reconocerla de oído.
+
+### Corregido
+- **"Volver" en una lección lleva al temario**, no a la lección anterior.
+
 ## [0.4.2] - 2026-10-22
 
 ### Agregado

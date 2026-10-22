@@ -8,7 +8,8 @@ export type Response =
   | { kind: "keys"; notes: number[] }
   | { kind: "frets"; positions: { string: number; fret: number }[] }
   | { kind: "names"; pcs: PitchClass[] }
-  | { kind: "rhythm"; tokens: string[] };
+  | { kind: "rhythm"; tokens: string[] }
+  | { kind: "staff"; step: number };
 
 function fretMidi(tuning: { letter: number; acc: number; octave: number }[], s: number, f: number): number {
   return midi(tuning[s - 1] as never) + f;
@@ -57,6 +58,8 @@ export function checkAnswer(a: Answer, r: Response): boolean {
       return r.kind === "names" && r.pcs.length === a.target.length && r.pcs.every((p, i) => samePc(p, a.target[i]));
     case "rhythm":
       return r.kind === "rhythm" && r.tokens.length === a.target.length && r.tokens.every((x, i) => x === a.target[i]);
+    case "staff":
+      return r.kind === "staff" && a.target.includes(r.step);
   }
 }
 

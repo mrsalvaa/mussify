@@ -63,7 +63,13 @@ export type Answer =
   /** Escribir una secuencia con botones de nombres de nota. */
   | { kind: "names"; target: PitchClass[]; choices: PitchClass[] }
   /** Armar un ritmo eligiendo figuras. */
-  | { kind: "rhythm"; target: string[]; choices: string[]; total: number };
+  | { kind: "rhythm"; target: string[]; choices: string[]; total: number }
+  /**
+   * Tocar una línea o un espacio del pentagrama. Los pasos se cuentan desde la 1ª línea (0 = 1ª línea,
+   * 1 = 1er espacio, ..., 8 = 5ª línea; negativos/mayores que 8 = líneas adicionales).
+   * `target` admite varias posiciones (p. ej. Do4 y Do5 si se conocen las dos). `reveal` dice la respuesta.
+   */
+  | { kind: "staff"; clef: "treble" | "bass" | null; target: number[]; minStep: number; maxStep: number; reveal: Label };
 
 export interface Exercise {
   id: string;

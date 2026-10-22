@@ -106,6 +106,11 @@ export function auditExercise(ex: Exercise, known: ReadonlySet<ConceptId>): stri
         if (t.includes(".") && !known.has("rh.dot")) out.push("puntillo");
       }
       break;
+    case "staff":
+      if (!known.has("t.staff")) out.push("pentagrama sin t.staff");
+      if (a.clef && !known.has(`clef.${a.clef}`)) out.push(`clave ${a.clef}`);
+      out.push(...labelProblems(a.reveal, known, "respuesta"));
+      break;
   }
   return [...new Set(out)];
 }

@@ -61,8 +61,9 @@
   }
   function goNext() {
     const next = cur.nextLesson(lesson.branch, masteredSet());
-    if (next.lesson && next.blockedBy.length === 0) nav.go({ view: "lesson", id: next.lesson.id });
-    else nav.go({ view: "home", branch: lesson.branch });
+    // Sin acumular historial: "Volver" lleva siempre al temario, no a la lección anterior.
+    if (next.lesson && next.blockedBy.length === 0) nav.reset({ view: "lesson", id: next.lesson.id });
+    else nav.reset({ view: "home", branch: lesson.branch });
   }
   const length = $derived(lesson.length ?? prefs.sessionLength);
 </script>
@@ -70,7 +71,7 @@
 <div class="page lesson">
   {#if phase === "read"}
     <div class="row top">
-      <button class="btn-ghost back" onclick={() => { void stopSeq(); nav.back(); }}><Icon name="back" size={18} /> {t("common.back")}</button>
+      <button class="btn-ghost back" onclick={() => { void stopSeq(); nav.reset({ view: "home", branch: lesson.branch }); }}><Icon name="back" size={18} /> {t("common.back")}</button>
       <span class="eyebrow">{t(`branch.${lesson.branch}`)} · {t(`unit.${lesson.unit}`)}</span>
     </div>
     <h1>{content?.title ?? lesson.id}</h1>

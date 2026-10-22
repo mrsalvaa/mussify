@@ -31,6 +31,8 @@ For Linux and Android, from a single codebase. **No accounts, no cloud, no telem
 - **Syllabus as a book or a map** (numbered chapters and topics with their mastery percentage, or a map of connected topics) with five branches: *Theory & ear* (common trunk, 152 lessons), *Piano*, *Guitar*, *Bass* and *Drums* (289 lessons in total).
 - **Strictly linear progression**: each lesson teaches **one** concept; nothing shows up before it's learned (no notes, note values, chords, or terms in the texts). This is verified by tests over every lesson and by an audit that runs in the app before each exercise.
 - **Randomly generated exercises** (seeded) weighted toward what you miss most: note reading, finding notes on the keyboard or fretboard, intervals, chords, scales, key signatures, degrees and functions, progressions by ear, melodic and rhythmic dictation, tab, chord diagrams, drum grooves, and more.
+- **Note recognition by ear, without a reference**, woven into the reading lessons and getting harder as you learn (from "is this G?" to any note in any octave), plus **tap-the-staff** exercises.
+- Sessions never repeat a question back to back and mix different kinds of exercises.
 - **Spaced repetition** (SM-2) and "what you miss most" practice.
 - **Optional placement test** per branch: unlocks only what you prove you know.
 - **Built-in notation engine**: staff (treble, bass, C and percussion clefs), tab and drums, with playback, cursor, adjustable tempo and bar looping.

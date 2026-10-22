@@ -19,14 +19,14 @@ const T = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len
 // Unidad 1: el sonido
 T("sound", "t.sound", [], [g("pitchHigher")], 8);
 T("sound", "t.notes", [], [g("noteOrder"), g("nameConvert")]);
-T("sound", "t.octave", [], [g("octaveSame"), g("noteOrder", undefined, 0.5)]);
+T("sound", "t.octave", [], [g("octaveSame", undefined, 1.5), g("octaveCount"), g("octaveName", undefined, 1.5), g("noteOrder", undefined, 0.5)]);
 
 // Unidad 2: pentagrama y clave de Sol
-T("staff", "t.staff", [], [g("staffPosition")]);
-T("staff", "clef.treble", [], [g("staffPosition", undefined, 0.5)]);
+T("staff", "t.staff", [], [g("staffPosition"), g("staffTap")]);
+T("staff", "clef.treble", [], [g("staffPosition", undefined, 0.5), g("staffTap")]);
 const READING_ORDER_TREBLE = ["G4", "A4", "F4", "B4", "E4", "C5", "D4", "C4", "D5", "E5", "F5", "G5"];
 for (const n of READING_ORDER_TREBLE) {
-  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, 2), g("findNote"), g("hearNote", undefined, 0.6)]);
+  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.6), g("hearNote", undefined, 0.6), g("absNote", undefined, 0.7)]);
 }
 
 // Unidad 3: ritmo básico
@@ -55,17 +55,17 @@ T("rhythm", "rest.16", [], [g("figureValue"), g("rhythmRead")]);
 T("bass-clef", "clef.bass", [], []);
 const READING_ORDER_BASS = ["F3", "G3", "E3", "A3", "D3", "C4", "B3", "C3", "B2", "A2", "G2", "F2", "E2"];
 for (const n of READING_ORDER_BASS) {
-  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("hearNote", undefined, 0.5)]);
+  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.5), g("hearNote", undefined, 0.5), g("absNote", undefined, 0.6)]);
 }
-T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3)]);
+T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3), g("absNote", undefined, 0.8)]);
 
 // Unidad 5: tonos, semitonos y alteraciones
 T("accidentals", "t.keyboardMap", [], []);
 T("accidentals", "t.semitone", [], [g("toneSemitone")]);
-T("accidentals", "acc.sharp", [], [g("readNote", { accidentals: true }, 2)]);
-T("accidentals", "acc.flat", [], [g("readNote", { accidentals: true }, 2)]);
+T("accidentals", "acc.sharp", [], [g("readNote", { accidentals: true }, 2), g("absNote", undefined, 0.8)]);
+T("accidentals", "acc.flat", [], [g("readNote", { accidentals: true }, 2), g("absNote", undefined, 0.8)]);
 T("accidentals", "acc.natural", [], [g("readNote", { accidentals: true })]);
-T("accidentals", "t.enharmonic", [], [g("enharmonic", undefined, 2)]);
+T("accidentals", "t.enharmonic", [], [g("enharmonic", undefined, 2), g("absNote", undefined, 0.7)]);
 T("accidentals", "acc.double", [], []);
 
 // Unidad 6: intervalos

@@ -12,6 +12,7 @@
   import LabelView from "./LabelView.svelte";
   import PlayButton from "./PlayButton.svelte";
   import DrumPads from "./DrumPads.svelte";
+  import StaffTap from "./StaffTap.svelte";
   import { CH } from "../platform/audio";
   import type { ScoreEvent } from "../core/notation/score";
   import { P } from "../core/theory/pitch";
@@ -31,6 +32,7 @@
   let positions = $state<{ string: number; fret: number }[]>([]);
   let pcs = $state<PitchClass[]>([]);
   let tokens = $state<string[]>([]);
+  let staffPicked = $state<number | null>(null);
   let praise = $state("");
 
   const a = $derived(exercise.answer);
@@ -77,6 +79,12 @@
     if (result !== null || a.kind !== "names") return;
     pcs = [...pcs, pc];
     if (pcs.length >= a.target.length) submit({ kind: "names", pcs });
+  }
+
+  function onStaff(step: number) {
+    if (result !== null || a.kind !== "staff") return;
+    staffPicked = step;
+    submit({ kind: "staff", step });
   }
 
   function onToken(tok: string) {
@@ -148,6 +156,8 @@
         return a.target.map((x) => noteLabel(x)).join(" – ");
       case "rhythm":
         return a.target.map(tokenLabel).join(", ");
+      case "staff":
+        return formatLabel(a.reveal);
     }
   });
   const isVisualChoice = $derived(a.kind === "choice" && a.options.some((o) => o.kind === "score" || o.kind === "diagram" || o.kind === "audio"));
@@ -225,6 +235,8 @@
         {/each}
         <button class="btn-small" onclick={undo} disabled={!pcs.length || result !== null}>{t("common.undo")}</button>
       </div>
+    {:else if a.kind === "staff"}
+      <StaffTap clef={a.clef} minStep={a.minStep} maxStep={a.maxStep} picked={staffPicked} reveal={a.target} {result} onpick={onStaff} />
     {:else if a.kind === "rhythm"}
       <div class="card built">
         {#if rhythmBuilt}<ScoreView score={rhythmBuilt} sp={9} maxWidth={520} />{:else}<p class="muted center">…</p>{/if}

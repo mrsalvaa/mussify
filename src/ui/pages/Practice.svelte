@@ -11,6 +11,7 @@
   const mastered = $derived(new Set(Object.keys(progress.mastered)));
   const has = (gens: string[]) => cur.lessons.some((l) => mastered.has(l.concept) && l.exercises.some((e) => gens.includes(e.gen)));
   const ear = [
+    { key: "notes", label: "ear.notes", icon: "play" },
     { key: "intervals", label: "ear.intervals", icon: "practice" },
     { key: "chords", label: "ear.chords", icon: "keys" },
     { key: "progressions", label: "ear.progressions", icon: "review" },

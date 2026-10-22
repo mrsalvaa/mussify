@@ -149,6 +149,42 @@ export function makeExercise(spec: ExerciseSpec, ctx: GenContext, id: string): E
   return { id, generator: spec.gen, ...ex };
 }
 
+/** Lo que identifica a una pregunta, sin importar el orden de las opciones. */
+export function exerciseSignature(ex: Exercise): string {
+  const a = ex.answer;
+  const ans = a.kind === "choice" ? a.options[a.correct] : a.kind === "rhythm" || a.kind === "names" || a.kind === "keys" || a.kind === "frets" || a.kind === "staff" ? a.target : null;
+  return JSON.stringify([ex.generator, ex.prompt, ans]);
+}
+
+function soundKey(ex: Exercise): string | null {
+  const evs = ex.prompt.audio?.events;
+  return evs?.length ? evs.map((e) => e.note).sort((a, b) => a - b).join(",") : null;
+}
+
+/**
+ * Arma una sesión variada: nunca la misma pregunta dos veces seguidas, cada pregunta una vez
+ * (hasta dos si no alcanza el material) y no más de dos ejercicios seguidos del mismo tipo.
+ */
+class SessionBuilder {
+  readonly out: Exercise[] = [];
+  private counts = new Map<string, number>();
+  constructor(private readonly kinds: number) {}
+  offer(ex: Exercise, relaxed: boolean): boolean {
+    const sig = exerciseSignature(ex);
+    const last = this.out[this.out.length - 1];
+    if (last && exerciseSignature(last) === sig) return false;
+    if ((this.counts.get(sig) ?? 0) >= (relaxed ? 2 : 1)) return false;
+    const prev2 = this.out.slice(-2);
+    if (!relaxed && this.kinds > 1 && prev2.length === 2 && prev2.every((e) => e.generator === ex.generator)) return false;
+    // Tampoco el mismo material sonoro (las mismas notas, en cualquier orden) en preguntas cercanas.
+    const sound = soundKey(ex);
+    if (!relaxed && sound && prev2.some((e) => soundKey(e) === sound)) return false;
+    this.counts.set(sig, (this.counts.get(sig) ?? 0) + 1);
+    this.out.push(ex);
+    return true;
+  }
+}
+
 /** Sesión de una lección: solo usa lo dominado + el concepto nuevo. */
 export function lessonSession(cur: Curriculum, lesson: Lesson, mastered: ReadonlySet<ConceptId>, opts: SessionOptions): Exercise[] {
   const known = new Set(mastered);
@@ -158,37 +194,32 @@ export function lessonSession(cur: Curriculum, lesson: Lesson, mastered: Readonl
   const specs = specsFor(lesson).filter((s) => runnable(s, ctx));
   if (!specs.length) return [];
   const length = opts.length ?? lesson.length ?? 10;
-  const out: Exercise[] = [];
-  const seen = new Set<string>();
-  for (let i = 0; out.length < length && i < length * 4; i++) {
+  const b = new SessionBuilder(new Set(specs.map((s) => s.gen)).size);
+  for (let i = 0; b.out.length < length && i < length * 12; i++) {
     const spec = rng.weighted(specs, (s) => s.weight ?? 1);
-    const ex = makeExercise(spec, ctx, `${lesson.id}#${i}`);
-    const key = JSON.stringify([ex.prompt, ex.answer]);
-    if (seen.has(key) && i < length * 3) continue;
-    seen.add(key);
-    out.push(ex);
+    b.offer(makeExercise(spec, ctx, `${lesson.id}#${i}`), i >= length * 6);
   }
   void cur;
-  return out;
+  return b.out;
 }
 
 /** Sesión de repaso: ejercicios centrados en los conceptos a repasar (todo con lo dominado). */
 export function reviewSession(cur: Curriculum, concepts: ConceptId[], mastered: ReadonlySet<ConceptId>, opts: SessionOptions): Exercise[] {
   const rng = new Rng(opts.seed ^ 0x5eed);
-  const out: Exercise[] = [];
   const length = opts.length ?? 12;
-  const pool = concepts.filter((c) => mastered.has(c) && cur.byConcept.has(c));
-  if (!pool.length) return out;
-  for (let i = 0; out.length < length && i < length * 5; i++) {
+  const pool = rng.shuffle(concepts.filter((c) => mastered.has(c) && cur.byConcept.has(c)));
+  if (!pool.length) return [];
+  const b = new SessionBuilder(2);
+  for (let i = 0; b.out.length < length && i < length * 10; i++) {
     const focus = pool[i % pool.length];
     const lesson = cur.byConcept.get(focus)!;
     const ctx: GenContext = { rng, known: mastered, focus, weight: weightFn(opts.stats) };
     const specs = specsFor(lesson).filter((s) => runnable(s, ctx));
     if (!specs.length) continue;
     const spec = rng.weighted(specs, (s) => s.weight ?? 1);
-    out.push(makeExercise(spec, ctx, `review:${focus}#${i}`));
+    b.offer(makeExercise(spec, ctx, `review:${focus}#${i}`), i >= length * 5);
   }
-  return rng.shuffle(out);
+  return b.out;
 }
 
 /** Práctica libre de una rama: mezcla de lo dominado, ponderando lo que más se falla. */
@@ -251,24 +282,25 @@ export function practiceByGenerators(cur: Curriculum, gens: string[], mastered: 
   const rng = new Rng(opts.seed ^ 0xabc);
   const length = opts.length ?? 12;
   const candidates = cur.lessons.filter((l) => mastered.has(l.concept) && l.exercises.some((e) => gens.includes(e.gen)));
-  const out: Exercise[] = [];
-  for (let i = 0; out.length < length && i < length * 6 && candidates.length; i++) {
+  const b = new SessionBuilder(gens.length);
+  for (let i = 0; b.out.length < length && i < length * 10 && candidates.length; i++) {
     const lesson = rng.weighted(candidates, (l) => 1 + (opts.stats ? Object.entries(opts.stats).filter(([k]) => k.startsWith(l.concept)).reduce((a, [, s]) => a + s.wrong, 0) : 0));
     const ctx: GenContext = { rng, known: mastered, focus: lesson.concept, weight: weightFn(opts.stats) };
     const specs = lesson.exercises.filter((e) => gens.includes(e.gen) && runnable(e, ctx));
     if (!specs.length) continue;
-    out.push(makeExercise(rng.pick(specs), ctx, `gen:${lesson.id}#${i}`));
+    b.offer(makeExercise(rng.pick(specs), ctx, `gen:${lesson.id}#${i}`), i >= length * 5);
   }
-  return out;
+  return b.out;
 }
 
 export const PRACTICE_GROUPS: Record<string, string[]> = {
+  notes: ["absNote"],
   intervals: ["intervalEar"],
   chords: ["chordEar", "guitarChordEar"],
   progressions: ["progressionEar", "cadenceIdentify"],
   melodic: ["melodicDictation"],
   rhythmic: ["rhythmDictation", "rhythmBuild"],
   scales: ["scaleEar", "modeIdentify"],
-  reading: ["readNote", "findNote", "staffToKey", "tabRead", "drumPieceRead", "keySignature", "intervalName", "chordRead"],
+  reading: ["readNote", "findNote", "placeNote", "noteLine", "staffToKey", "tabRead", "drumPieceRead", "keySignature", "intervalName", "chordRead"],
   rhythm: ["figureValue", "rhythmSum", "measureComplete", "rhythmRead", "meterEar", "grooveRead", "grooveEar"],
 };

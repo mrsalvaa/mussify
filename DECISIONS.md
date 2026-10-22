@@ -125,3 +125,9 @@ Solo análisis originales: estructura, progresiones (no protegibles), tonalidad,
 - No se usa la URL de miniatura que devuelve yt-dlp: se arma `https://i.ytimg.com/vi/<id>/mqdefault.jpg` con el id validado (solo `[A-Za-z0-9_-]`), sin redirecciones, con 10 s de tiempo máximo y 256 KB por imagen. Así un resultado manipulado no puede hacer que la app se conecte a otro lado.
 - Un comando aparte (`yt_thumbs`) en lugar de incluirlas en `yt_search`, para que la lista aparezca sin esperar las imágenes. Se registra una entrada por búsqueda (`thumbs|N`).
 
+## 21. Variedad, pentagrama interactivo y notas de oído (0.5)
+
+- **Sin repeticiones**: `SessionBuilder` (en `engine.ts`) acepta un ejercicio solo si su firma (generador + consigna + respuesta correcta, sin importar el orden de las opciones) no es la del anterior, no salió ya en la sesión (dos veces, solo si se agota el material), no es el tercero seguido del mismo generador y no repite las notas de audio de los dos anteriores. Lo verifica `tests/variety.test.ts` en todas las lecciones.
+- **Respuesta "staff"**: un tipo de respuesta nuevo (tocar una línea o un espacio). La posición se guarda como paso desde la 1ª línea; `target` admite varias posiciones (por ejemplo Do4 y Do5 si se conocen ambas). Al equivocarse solo se muestran la posición tocada y la correcta, nunca el nombre de una nota no aprendida.
+- **Notas de oído (oído absoluto)**: en lugar de una lección "desarrollá el oído absoluto", el generador `absNote` aparece dentro de las lecciones de lectura, de alteraciones y del dictado melódico, y su dificultad depende de lo aprendido: sí/no con una nota; dos opciones lejanas (≥ 4 semitonos) hasta conocer cuatro notas; tres o cuatro opciones, también vecinas, después; con alteraciones, cualquier octava. Las notas que suenan sin nombre (los "no" de sí/no) solo usan el sonido, como en "¿cuál es más aguda?".
+

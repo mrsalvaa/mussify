@@ -1,0 +1,12 @@
+[package]
+name = "mussify-engine"
+description = "Motor de audio de Mussify: sampler, metrónomo, secuenciador y reproductor con cambio de tempo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+cpal = "0.18"
+symphonia = { version = "0.5.5", default-features = false, features = ["mp3", "vorbis", "flac", "wav", "pcm", "ogg", "isomp4", "aac"] }
+serde = { version = "1", features = ["derive"] }
+log = "0.4"

@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.2.0] - 2026-10-22
+
+Rediseño de la interfaz: se mantiene el método de aprendizaje, pero ya no se parece a Duolingo.
+
+### Cambiado
+- La progresión se muestra como el **temario de un libro**: capítulos numerados con su porcentaje de dominio y temas numerados (3.1, 3.2…). El capítulo actual marca "seguir acá"; los futuros aparecen bloqueados. Se eliminó el camino de nodos.
+- **Estética editorial**: fondo papel (o gris cálido en modo oscuro), un único color de acento, tipografías Source Serif 4 y Source Sans 3, controles finos e íconos lineales propios. Sin emojis.
+- **Gamificación discreta**: racha y meta semanal como una línea de texto; el feedback dice "Correcto" / "Incorrecto".
+- **Lecciones integradas**: ejercicios "Probalo" intercalados en la explicación (no cuentan para dominar) y una práctica final para dominar el tema.
+
+### Corregido
+- Error al importar un archivo desde la biblioteca (el formulario se desmontaba antes de limpiarse).
+
 ## [0.1.0] - 2026-10-22
 
 Primera versión.
@@ -28,4 +41,5 @@ Primera versión.
 - De los archivos importados con varias voces por pentagrama se muestra la primera voz.
 - El APK es solo para arm64-v8a.
 
+[0.2.0]: https://github.com/mrsalvaa/mussify/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mrsalvaa/mussify/releases/tag/v0.1.0

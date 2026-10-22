@@ -2129,7 +2129,7 @@ checksum = "743fb55ba31b18fb1ecef6bdc9aa2743314978ac084044301a7eee33fb99a20d"
 
 [[package]]
 name = "mussify"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -2149,7 +2149,7 @@ dependencies = [
 
 [[package]]
 name = "mussify-analysis"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "rustfft",
  "serde",
@@ -2157,7 +2157,7 @@ dependencies = [
 
 [[package]]
 name = "mussify-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cpal",
  "log",

@@ -16,7 +16,7 @@
 </script>
 
 {#if pieces.length}
-  <div class="pads" role="group" aria-label="Pads de batería (para escuchar)">
+  <div class="pads" role="group" aria-label={t("aria.drumPads")}>
     {#each pieces as p (p.id)}
       <button class="pad {flash === p.id ? 'hit' : ''} {p.head !== 'normal' ? 'cym' : ''}" onpointerdown={(e) => { e.preventDefault(); hit(p.gm, p.id); }}>
         {t(`drum.${p.id}`)}

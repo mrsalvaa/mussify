@@ -109,3 +109,12 @@ Solo análisis originales: estructura, progresiones (no protegibles), tonalidad,
 
 - El temario ofrece dos vistas de la misma progresión: **libro** (índice) y **mapa** (cada capítulo como grupo de temas conectados). Los temas bloqueados del mapa no muestran nombre.
 - Las AppImage exportan `PYTHONHOME`, `PYTHONPATH`, `LD_LIBRARY_PATH` y otras variables apuntando a su montaje. Los procesos del sistema que lanzamos (yt-dlp, ffmpeg) se ejecutan con esas variables quitadas y sin las entradas del montaje en `PATH`/`XDG_DATA_DIRS` (`net::system_command`).
+
+## 19. Inglés como idioma por defecto (0.4)
+
+- El contenido de lecciones vive en `src/content/<idioma>/` con **los mismos ids y ejemplos** en cada idioma; solo cambia el texto. Así la progresión y las auditorías no dependen del idioma.
+- Cada idioma tiene su vocabulario controlado (`TERMS_EN`, `TERMS_ES` en `src/content/terms.ts`); los tests de contenido corren para los dos.
+- El backend no devuelve frases: devuelve códigos (`E_NET_DISABLED`, `E_YTDLP::detalle`…) que la UI traduce con `localizeError`. El registro de red guarda el motivo como `search|consulta` / `download|título`.
+- Cambiar de idioma recarga la app: es más simple y seguro que re-renderizar todo el contenido cargado en memoria.
+- Las preferencias guardadas por versiones anteriores (sin `prefsVersion`) pasan una vez a inglés con nombres C D E.
+

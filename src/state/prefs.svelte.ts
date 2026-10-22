@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Ajustes del usuario (persistidos localmente).
 import { backend } from "../platform/bridge";
-import { setFormatPrefs, type Naming } from "../i18n";
+import { setFormatPrefs, setLocale, DEFAULT_LOCALE, type Naming } from "../i18n";
+import { loadContent } from "../content";
 
 export interface Prefs {
   naming: Naming;
@@ -19,10 +20,12 @@ export interface Prefs {
   locale: string;
   /** Vista del temario: índice de libro o mapa. */
   homeView: "book" | "map";
+  /** Versión del formato de ajustes (para migraciones). */
+  prefsVersion: number;
 }
 
 export const DEFAULT_PREFS: Prefs = {
-  naming: "latin",
+  naming: "english",
   theme: "system",
   uiScale: 1,
   highContrast: false,
@@ -34,8 +37,9 @@ export const DEFAULT_PREFS: Prefs = {
   bass5: false,
   weeklyGoal: 5,
   volume: 0.8,
-  locale: "es-AR",
+  locale: DEFAULT_LOCALE,
   homeView: "book",
+  prefsVersion: 2,
 };
 
 export const prefs = $state<Prefs>({ ...DEFAULT_PREFS });
@@ -43,11 +47,28 @@ export const prefs = $state<Prefs>({ ...DEFAULT_PREFS });
 export async function loadPrefs(): Promise<void> {
   try {
     const raw = await backend.kvGet("prefs");
-    if (raw) Object.assign(prefs, { ...DEFAULT_PREFS, ...JSON.parse(raw) });
+    if (raw) {
+      const stored = JSON.parse(raw);
+      Object.assign(prefs, { ...DEFAULT_PREFS, ...stored });
+      // v0.4: el inglés pasa a ser el idioma por defecto
+      if (!stored.prefsVersion) {
+        prefs.locale = DEFAULT_LOCALE;
+        prefs.naming = "english";
+        prefs.prefsVersion = 2;
+      }
+    }
   } catch {
     /* valores por defecto */
   }
   applyPrefs();
+}
+
+/** Cambia el idioma (y la nomenclatura que le corresponde) y recarga la app. */
+export async function changeLocale(l: string): Promise<void> {
+  prefs.locale = l;
+  prefs.naming = l === "en" ? "english" : "latin";
+  await backend.kvSet("prefs", JSON.stringify(prefs));
+  location.reload();
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -58,6 +79,8 @@ export function savePrefs(): void {
 }
 
 export function applyPrefs(): void {
+  setLocale(prefs.locale);
+  loadContent(prefs.locale);
   setFormatPrefs({ naming: prefs.naming });
   if (typeof document === "undefined") return;
   const root = document.documentElement;

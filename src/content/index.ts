@@ -5,12 +5,16 @@ import type { Song } from "../core/songs/song";
 import type { LessonContent, LessonTexts } from "./types";
 import { ES_AR } from "./es-AR";
 import { SONGS_ES } from "./es-AR/songs";
+import { EN } from "./en";
+import { SONGS_EN } from "./en/songs";
+import { setTermsLocale } from "./terms";
 
-const LOCALES: Record<string, { lessons: LessonTexts; songs: Song[] }> = { "es-AR": { lessons: ES_AR, songs: SONGS_ES } };
-let current = LOCALES["es-AR"];
+const LOCALES: Record<string, { lessons: LessonTexts; songs: Song[] }> = { en: { lessons: EN, songs: SONGS_EN }, "es-AR": { lessons: ES_AR, songs: SONGS_ES } };
+let current = LOCALES.en;
 
-export function loadContent(locale = "es-AR"): void {
-  current = LOCALES[locale] ?? LOCALES["es-AR"];
+export function loadContent(locale = "en"): void {
+  current = LOCALES[locale] ?? LOCALES.en;
+  setTermsLocale(LOCALES[locale] ? locale : "en");
   for (const [id, c] of Object.entries(current.lessons)) registerQuiz(id, c.quiz ?? []);
 }
 

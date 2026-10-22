@@ -172,7 +172,7 @@ fn audio_thread(rx: Receiver<Cmd>, st: Arc<Mutex<Status>>, rate_tx: Sender<u32>)
         }
     };
     let Some(device) = device else {
-        fail("No hay dispositivo de salida de audio".into(), &st);
+        fail("no audio output device".into(), &st);
         let _ = rate_tx.send(48000);
         // Seguimos consumiendo comandos para no bloquear a nadie.
         let mut m = Mixer::new(48000, banks);
@@ -184,7 +184,7 @@ fn audio_thread(rx: Receiver<Cmd>, st: Arc<Mutex<Status>>, rate_tx: Sender<u32>)
     let cfg = match device.default_output_config() {
         Ok(c) => c,
         Err(e) => {
-            fail(format!("Sin configuración de salida: {e}"), &st);
+            fail(format!("no output configuration: {e}"), &st);
             let _ = rate_tx.send(48000);
             return;
         }
@@ -223,14 +223,14 @@ fn audio_thread(rx: Receiver<Cmd>, st: Arc<Mutex<Status>>, rate_tx: Sender<u32>)
             match build(config) {
                 Ok(s) => s,
                 Err(e) => {
-                    fail(format!("No pude abrir la salida de audio: {e}"), &st);
+                    fail(format!("could not open audio output: {e}"), &st);
                     return;
                 }
             }
         }
     };
     if let Err(e) = stream.play() {
-        fail(format!("No pude iniciar el audio: {e}"), &st);
+        fail(format!("could not start audio: {e}"), &st);
     } else if let Ok(mut s) = st.lock() {
         s.ok = true;
         s.rate = rate;

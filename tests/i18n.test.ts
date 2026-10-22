@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Todas las claves de texto que generan los ejercicios existen en es-AR.
+// Todas las claves de texto que generan los ejercicios existen en cada idioma.
 import { describe, expect, it } from "vitest";
 import { Curriculum, lessonSession } from "../src/core/curriculum/engine";
 import { loadContent, exampleSongs } from "../src/content";
-import { hasKey, formatLabel, formatMsg } from "../src/i18n";
+import { hasKey, formatLabel, formatMsg, setLocale } from "../src/i18n";
 import type { Label, Msg } from "../src/core/curriculum/types";
 import { songExercises } from "../src/core/songs/song";
 
-loadContent("es-AR");
 const cur = new Curriculum();
 
 function keysOfMsg(m: Msg, out: Set<string>) {
@@ -20,8 +19,10 @@ function keysOfLabel(l: Label, out: Set<string>) {
   if (l.kind === "audio" && l.text) keysOfMsg(l.text, out);
 }
 
-describe("i18n", () => {
+for (const locale of ["en", "es-AR"]) describe(`i18n ${locale}`, () => {
   it("todas las claves usadas existen y se formatean", () => {
+    setLocale(locale);
+    loadContent(locale);
     const keys = new Set<string>();
     for (const l of cur.lessons) {
       const mastered = cur.closure(l.concept);

@@ -1,11 +1,11 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <script lang="ts">
   import { onMount } from "svelte";
-  import { prefs, savePrefs } from "../../state/prefs.svelte";
+  import { prefs, savePrefs, changeLocale } from "../../state/prefs.svelte";
   import { loadProgress, resetLocalProgress } from "../../state/progress.svelte";
   import { backend, type NetEntry, type ToolInfo, type AudioStatus } from "../../platform/bridge";
   import { nav } from "../../state/nav.svelte";
-  import { t } from "../../i18n";
+  import { t, localizeError, LOCALE_NAMES, currentLocale } from "../../i18n";
   import { AVAILABLE_LOCALES } from "../../content";
 
   let netAllowed = $state(false);
@@ -41,7 +41,7 @@
       const ok = await backend.saveFile(`mussify-respaldo-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}.json`, bytes);
       if (ok) msg = t("settings.exported");
     } catch (e) {
-      msg = String(e);
+      msg = localizeError(e);
     }
   }
   async function importBackup(e: Event) {
@@ -53,7 +53,7 @@
       await loadProgress();
       msg = t("settings.imported");
     } catch (err) {
-      msg = String(err);
+      msg = localizeError(err);
     } finally {
       if (fileInput) fileInput.value = "";
     }
@@ -98,7 +98,8 @@
     <label class="row"><input type="checkbox" bind:checked={prefs.highContrast} onchange={savePrefs} />{t("settings.contrast")}</label>
     <label class="row"><input type="checkbox" bind:checked={prefs.colorblind} onchange={savePrefs} />{t("settings.colorblind")}</label>
     <label class="col">{t("settings.language")}
-      <select bind:value={prefs.locale} onchange={savePrefs}>{#each AVAILABLE_LOCALES as l (l)}<option value={l}>{l === "es-AR" ? "Español (Argentina)" : l}</option>{/each}</select>
+      <select value={prefs.locale} onchange={(e) => changeLocale((e.target as HTMLSelectElement).value)}>{#each AVAILABLE_LOCALES as l (l)}<option value={l}>{LOCALE_NAMES[l] ?? l}</option>{/each}</select>
+      <span class="small muted">{t("settings.languageHint")}</span>
     </label>
   </section>
 
@@ -137,7 +138,7 @@
     {#if !log.length}<p class="muted small">{t("settings.networkLogEmpty")}</p>{/if}
     <ul class="log">
       {#each log as e (e.id)}
-        <li><span class="muted">{new Date(e.ts).toLocaleString("es-AR")}</span> · <strong>{e.destination}</strong> · {e.reason} {e.ok ? "✓" : "✗"}</li>
+        <li><span class="muted">{new Date(e.ts).toLocaleString(currentLocale())}</span> · <strong>{e.destination}</strong> · {e.reason.includes("|") ? t(`netlog.${e.reason.split("|")[0]}`, { q: e.reason.slice(e.reason.indexOf("|") + 1) }) : e.reason} {e.ok ? "✓" : "✗"}</li>
       {/each}
     </ul>
     {#if log.length}<button class="btn-small" onclick={clearLog}>{t("settings.networkClear")}</button>{/if}
@@ -147,7 +148,7 @@
         <p class="small">yt-dlp: {tools.ytdlp ? `${tools.ytdlp} (${tools.ytdlpVersion ?? "?"})` : "—"} · ffmpeg: {tools.ffmpeg ? "✓" : "—"}</p>
         <label class="col small">{t("settings.ytdlpPath")}<input type="text" bind:value={ytdlpPath} onchange={saveYtdlp} placeholder="/usr/bin/yt-dlp" /></label>
       {:else}
-        <p class="small muted">{tools.reason}</p>
+        <p class="small muted">{localizeError(tools.reason)}</p>
       {/if}
     {/if}
   </section>
@@ -170,7 +171,7 @@
   </section>
 
   <h2>{t("settings.about")}</h2>
-  <section class="card"><p>{t("settings.aboutText")}</p><p class="small muted">Mussify 0.3.0 · GPL-3.0-or-later</p></section>
+  <section class="card"><p>{t("settings.aboutText")}</p><p class="small muted">Mussify 0.4.0 · GPL-3.0-or-later</p></section>
 </div>
 
 <style>

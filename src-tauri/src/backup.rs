@@ -39,7 +39,7 @@ pub fn seal(payload: &serde_json::Value, password: Option<&str>) -> Result<Vec<u
             getrandom::getrandom(&mut nonce).map_err(|e| e.to_string())?;
             let key = derive(pw, &salt)?;
             let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
-            let ct = cipher.encrypt(Nonce::from_slice(&nonce), payload.to_string().as_bytes()).map_err(|_| "No se pudo cifrar".to_string())?;
+            let ct = cipher.encrypt(Nonce::from_slice(&nonce), payload.to_string().as_bytes()).map_err(|_| "E_ENCRYPT".to_string())?;
             Envelope { format: FORMAT.into(), version: 1, encrypted: true, salt: Some(B64.encode(salt)), nonce: Some(B64.encode(nonce)), data: serde_json::Value::String(B64.encode(ct)) }
         }
     };
@@ -47,20 +47,20 @@ pub fn seal(payload: &serde_json::Value, password: Option<&str>) -> Result<Vec<u
 }
 
 pub fn open(bytes: &[u8], password: Option<&str>) -> Result<serde_json::Value, String> {
-    let env: Envelope = serde_json::from_slice(bytes).map_err(|_| "El archivo no es un respaldo de Mussify".to_string())?;
+    let env: Envelope = serde_json::from_slice(bytes).map_err(|_| "E_NOT_BACKUP".to_string())?;
     if env.format != FORMAT {
-        return Err("El archivo no es un respaldo de Mussify".into());
+        return Err("E_NOT_BACKUP".into());
     }
     if !env.encrypted {
         return Ok(env.data);
     }
-    let pw = password.filter(|p| !p.is_empty()).ok_or("Este respaldo está cifrado: ingresá la contraseña")?;
+    let pw = password.filter(|p| !p.is_empty()).ok_or("E_NEED_PASSWORD")?;
     let salt = B64.decode(env.salt.unwrap_or_default()).map_err(|e| e.to_string())?;
     let nonce = B64.decode(env.nonce.unwrap_or_default()).map_err(|e| e.to_string())?;
     let ct = B64.decode(env.data.as_str().unwrap_or_default()).map_err(|e| e.to_string())?;
     let key = derive(pw, &salt)?;
     let cipher = Aes256Gcm::new_from_slice(&key).map_err(|e| e.to_string())?;
-    let pt = cipher.decrypt(Nonce::from_slice(&nonce), ct.as_ref()).map_err(|_| "Contraseña incorrecta o archivo dañado".to_string())?;
+    let pt = cipher.decrypt(Nonce::from_slice(&nonce), ct.as_ref()).map_err(|_| "E_BAD_PASSWORD".to_string())?;
     serde_json::from_slice(&pt).map_err(|e| e.to_string())
 }
 

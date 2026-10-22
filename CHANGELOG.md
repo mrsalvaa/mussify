@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.4.0] - 2026-10-22
+
+### Agregado
+- **Inglés**: toda la interfaz, las 289 lecciones con sus preguntas y las 12 fichas de canciones están en inglés, que pasa a ser el **idioma por defecto**. El español rioplatense sigue disponible en *Settings → Language* (la app se recarga al cambiarlo). Las instalaciones existentes pasan a inglés una sola vez; después se respeta lo que elijas.
+- Vocabulario controlado en inglés: los tests verifican, en ambos idiomas, que ningún término técnico aparezca antes de aprenderse.
+- README en inglés (`README.md`) y en español (`README.es.md`), cada uno con sus capturas.
+
+### Cambiado
+- **Ícono nuevo**: una clave de sol (glifo de Bravura) sobre un pentagrama, en el bordó de la app. Reemplaza al ícono verde anterior en escritorio y Android.
+- En inglés, los nombres de notas usan C D E por defecto y los patrones de escala usan W/H (whole/half step).
+- Los errores del backend (red, yt-dlp, respaldo, audio) se envían como códigos y se traducen en la interfaz; las secciones del análisis de audio también.
+- Fechas formateadas según el idioma elegido.
+
 ## [0.3.0] - 2026-10-22
 
 ### Agregado

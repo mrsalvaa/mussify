@@ -2,7 +2,7 @@
 <script lang="ts">
   import { progress, addJournal } from "../../state/progress.svelte";
   import { nav } from "../../state/nav.svelte";
-  import { t } from "../../i18n";
+  import { t, currentLocale } from "../../i18n";
 
   let text = $state("");
   let minutes = $state(20);
@@ -27,7 +27,7 @@
   {#if !progress.journal.length}<p class="muted">{t("journal.empty")}</p>{/if}
   {#each progress.journal as j, i (i)}
     <div class="card entry">
-      <div class="muted small">{new Date(j.ts).toLocaleString("es-AR")} · {j.minutes} min</div>
+      <div class="muted small">{new Date(j.ts).toLocaleString(currentLocale())} · {j.minutes} min</div>
       <p>{j.text}</p>
     </div>
   {/each}

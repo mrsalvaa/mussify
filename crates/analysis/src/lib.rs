@@ -32,7 +32,7 @@ pub struct SectionSeg {
     pub end: f64,
     /// Letra de agrupamiento (A, B, C...): segmentos con la misma letra se parecen.
     pub label: String,
-    /// Nombre sugerido: intro, verso, estribillo, solo, final.
+    /// Nombre sugerido (código): intro, verse, chorus, solo, bridge, outro, theme.
     pub name: String,
 }
 
@@ -414,7 +414,7 @@ fn chords_viterbi(feats: &[[f32; 12]], energy: &[f32]) -> Vec<(usize, f32)> {
 fn sections(feats: &[[f32; 12]], energy: &[f32], beat_times: &[f64], beats_per_bar: usize) -> Vec<SectionSeg> {
     let n = feats.len();
     if n < 16 {
-        return vec![SectionSeg { start: *beat_times.first().unwrap_or(&0.0), end: *beat_times.last().unwrap_or(&0.0), label: "A".into(), name: "tema".into() }];
+        return vec![SectionSeg { start: *beat_times.first().unwrap_or(&0.0), end: *beat_times.last().unwrap_or(&0.0), label: "A".into(), name: "theme".into() }];
     }
     let emax = energy.iter().cloned().fold(0.0, f32::max).max(1e-9);
     let fv: Vec<Vec<f32>> = feats.iter().zip(energy).map(|(f, e)| {
@@ -500,15 +500,15 @@ fn sections(feats: &[[f32; 12]], energy: &[f32], beat_times: &[f64], beats_per_b
         let name = if i == 0 && short && segs.len() > 2 {
             "intro"
         } else if i == last && short && segs.len() > 2 {
-            "final"
+            "outro"
         } else if Some(l) == chorus {
-            "estribillo"
+            "chorus"
         } else if counts[l] == 1 && seg_energy[i] / max_e > 0.85 && i > 1 {
             "solo"
         } else if counts[l] == 1 {
-            "puente"
+            "bridge"
         } else {
-            "verso"
+            "verse"
         };
         SectionSeg {
             start: beat_times[*a],

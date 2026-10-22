@@ -2,7 +2,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { nav } from "./state/nav.svelte";
-  import { loadPrefs } from "./state/prefs.svelte";
+  import { loadPrefs, prefs, applyPrefs } from "./state/prefs.svelte";
   import { loadProgress, progress } from "./state/progress.svelte";
   import { cur } from "./state/curriculum";
   import { t } from "./i18n";
@@ -32,6 +32,12 @@
     // Solo en desarrollo: ?demo=N marca como dominados los primeros N conceptos y ?view=... abre una vista.
     if (import.meta.env.DEV) {
       const q = new URLSearchParams(location.search);
+      const lang = q.get("lang");
+      if (lang) {
+        prefs.locale = lang;
+        prefs.naming = lang === "en" ? "english" : "latin";
+        applyPrefs();
+      }
       const n = Number(q.get("demo") ?? 0);
       if (n) for (const c of cur.topoOrder().slice(0, n)) progress.mastered[c] = { at: Date.now(), score: 1 };
       const view = q.get("view");

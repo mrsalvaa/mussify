@@ -6,10 +6,10 @@ License: GPL-3.0-or-later
 SourceCode: https://REPO/mussify
 IssueTracker: https://REPO/mussify/issues
 AutoName: Mussify
-Summary: Aprendé música sin conexión: lectura, oído, teoría y canciones
+Summary: Learn music offline: reading, ear training, theory and songs
 Description: |-
-  App libre para aprender música desde cero en piano, guitarra, bajo y batería.
-  Sin cuentas, sin nube, sin telemetría. Permisos: solo Internet (no se usa en Android).
+  A free app to learn music from scratch on piano, guitar, bass and drums.
+  No accounts, no cloud, no telemetry. Permissions: Internet only (unused on Android).
 RepoType: git
 Repo: https://REPO/mussify.git
 Builds:

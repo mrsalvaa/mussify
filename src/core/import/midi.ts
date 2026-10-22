@@ -53,7 +53,7 @@ class Reader {
       v = (v << 7) | (b & 0x7f);
       if (!(b & 0x80)) return v;
     }
-    throw new Error("VLQ inválido");
+    throw new Error("E_MIDI_BAD");
   }
   bytes(n: number): Uint8Array {
     const out = this.d.subarray(this.pos, this.pos + n);
@@ -73,7 +73,7 @@ export function parseMidi(data: Uint8Array): MidiFile {
   const ntracks = r.u16();
   const division = r.u16();
   r.pos += hlen - 6;
-  if (division & 0x8000) throw new Error("MIDI con división SMPTE no soportado");
+  if (division & 0x8000) throw new Error("E_MIDI_SMPTE");
   const ppq = division;
   let tempo = 120;
   let tempoSet = false;
@@ -146,7 +146,7 @@ export function parseMidi(data: Uint8Array): MidiFile {
     // Separar por canal: cada canal con notas es una pista distinta.
     for (const [ch, notes] of byChannel) {
       notes.sort((a, b) => a.tick - b.tick || a.note - b.note);
-      tracks.push({ name: track.name || (ch === 9 ? "Batería" : `Pista ${tracks.length + 1}`), program: track.program, notes });
+      tracks.push({ name: track.name || (ch === 9 ? "Drums" : `Track ${tracks.length + 1}`), program: track.program, notes });
     }
   }
   return { format, ppq, tracks, tempo, timeSig, keyFifths };

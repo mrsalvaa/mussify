@@ -6,11 +6,11 @@ import { songRequirements, songStatus, songExercises, sectionRequirements } from
 import { auditExercise } from "../src/core/curriculum/audit";
 import type { ConceptId } from "../src/core/curriculum/types";
 
-loadContent("es-AR");
 const cur = new Curriculum();
-const songs = exampleSongs();
 
-describe("fichas de canciones", () => {
+for (const locale of ["en", "es-AR"]) describe(`fichas de canciones (${locale})`, () => {
+  loadContent(locale);
+  const songs = exampleSongs();
   it("hay 3 de piano, 3 de guitarra y al menos 2 de bajo y de batería", () => {
     const count = (i: string) => songs.filter((s) => s.instrument === i).length;
     expect(count("piano")).toBe(3);

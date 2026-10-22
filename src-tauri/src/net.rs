@@ -89,7 +89,7 @@ pub fn tool_info(db: &Db) -> ToolInfo {
             ytdlp: None,
             ytdlp_version: None,
             ffmpeg: false,
-            reason: Some("En Android no se puede ejecutar yt-dlp dentro de la app. Descargá el audio con otra app FOSS (por ejemplo NewPipe) y compartilo o importalo en Mussify.".into()),
+            reason: Some("E_ANDROID".into()),
         };
     }
     let p = ytdlp_path(db);
@@ -105,19 +105,19 @@ pub fn tool_info(db: &Db) -> ToolInfo {
 
 fn guard(db: &Db, reason: &str) -> Result<PathBuf, String> {
     if !db.network_allowed() {
-        return Err("Las conexiones de red están desactivadas. Activalas en Ajustes → Red para buscar y descargar.".into());
+        return Err("E_NET_DISABLED".into());
     }
     if cfg!(target_os = "android") {
         return Err(tool_info(db).reason.unwrap_or_default());
     }
     let _ = reason;
-    ytdlp_path(db).ok_or_else(|| "No encontré yt-dlp. Instalalo (en Arch/CachyOS: sudo pacman -S yt-dlp) o indicá su ruta en Ajustes.".into())
+    ytdlp_path(db).ok_or_else(|| "E_NO_YTDLP".into())
 }
 
 pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
     let q = query.trim();
     if q.is_empty() {
-        return Err("Escribí qué querés buscar".into());
+        return Err("E_EMPTY_QUERY".into());
     }
     let bin = guard(db, "búsqueda")?;
     let out = system_command(&bin)
@@ -127,14 +127,14 @@ pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
     let out = match out {
         Ok(o) => o,
         Err(e) => {
-            db.net_log("www.youtube.com (yt-dlp)", &format!("Búsqueda: {q}"), false);
-            return Err(format!("No pude ejecutar yt-dlp: {e}"));
+            db.net_log("www.youtube.com (yt-dlp)", &format!("search|{q}"), false);
+            return Err(format!("E_YTDLP::{e}"));
         }
     };
     let ok = out.status.success();
-    db.net_log("www.youtube.com (yt-dlp)", &format!("Búsqueda: {q}"), ok);
+    db.net_log("www.youtube.com (yt-dlp)", &format!("search|{q}"), ok);
     if !ok {
-        return Err(format!("yt-dlp falló: {}", error_summary(&out.stderr)));
+        return Err(format!("E_YTDLP::{}", error_summary(&out.stderr)));
     }
     let mut res = Vec::new();
     for line in String::from_utf8_lossy(&out.stdout).lines() {
@@ -157,7 +157,7 @@ pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
 /// Descarga solo el audio a la carpeta de la biblioteca. Devuelve la ruta del archivo.
 pub fn download(db: &Db, id: &str, title: &str, dir: &Path) -> Result<PathBuf, String> {
     if !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
-        return Err("Identificador inválido".into());
+        return Err("E_BAD_ID".into());
     }
     let bin = guard(db, "descarga")?;
     let url = format!("https://www.youtube.com/watch?v={id}");
@@ -171,14 +171,14 @@ pub fn download(db: &Db, id: &str, title: &str, dir: &Path) -> Result<PathBuf, S
         cmd.args(["-f", "bestaudio[ext=m4a]/bestaudio[acodec^=mp4a]/bestaudio[ext=mp3]"]);
     }
     cmd.arg(&url);
-    let out = cmd.output().map_err(|e| format!("No pude ejecutar yt-dlp: {e}"))?;
+    let out = cmd.output().map_err(|e| format!("E_YTDLP::{e}"))?;
     let ok = out.status.success();
-    db.net_log("www.youtube.com (yt-dlp)", &format!("Descarga de audio: {title}"), ok);
+    db.net_log("www.youtube.com (yt-dlp)", &format!("download|{title}"), ok);
     if !ok {
-        return Err(format!("La descarga falló: {}", error_summary(&out.stderr)));
+        return Err(format!("E_DOWNLOAD::{}", error_summary(&out.stderr)));
     }
     let path = String::from_utf8_lossy(&out.stdout).lines().last().map(|s| PathBuf::from(s.trim())).filter(|p| p.is_file());
-    path.ok_or_else(|| "yt-dlp terminó pero no encontré el archivo descargado".into())
+    path.ok_or_else(|| "E_DOWNLOAD::no output file".into())
 }
 
 /// La línea más útil del error de yt-dlp (la que dice ERROR, o la primera no vacía).
@@ -190,7 +190,7 @@ fn error_summary(stderr: &[u8]) -> String {
         .find(|l| l.starts_with("ERROR") || l.starts_with("Fatal Python error"))
         .or_else(|| lines.first())
         .map(|l| l.to_string())
-        .unwrap_or_else(|| "error desconocido".into())
+        .unwrap_or_else(|| "unknown error".into())
 }
 
 #[cfg(test)]

@@ -6,7 +6,7 @@
   import { lessonContent } from "../../content";
   import { BRANCHES } from "../../core/curriculum/types";
   import { nav } from "../../state/nav.svelte";
-  import { t, hasKey } from "../../i18n";
+  import { t, hasKey, currentLocale } from "../../i18n";
 
   const acc = $derived(
     Object.entries(progress.genStats)
@@ -55,7 +55,7 @@
   <h2>{t("progress.history")}</h2>
   <ul class="hist">
     {#each progress.history.slice(0, 40) as h, i (i)}
-      <li><span class="muted small">{new Date(h.ts).toLocaleString("es-AR")}</span> · {h.kind === "lesson" ? lessonContent(h.id)?.title : h.kind} · {h.ok}/{h.total} {h.passed ? "✓" : ""}</li>
+      <li><span class="muted small">{new Date(h.ts).toLocaleString(currentLocale())}</span> · {h.kind === "lesson" ? lessonContent(h.id)?.title : h.kind} · {h.ok}/{h.total} {h.passed ? "✓" : ""}</li>
     {/each}
   </ul>
 </div>

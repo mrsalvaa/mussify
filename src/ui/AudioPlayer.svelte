@@ -7,7 +7,7 @@
   import { timeSigConcept } from "../core/curriculum/extract";
   import { progress } from "../state/progress.svelte";
   import { prefs } from "../state/prefs.svelte";
-  import { formatLabel, t } from "../i18n";
+  import { formatLabel, t, localizeError, hasKey } from "../i18n";
 
   interface Analysis {
     tempo: number;
@@ -61,7 +61,7 @@
         }
       }, 80);
     } catch (e) {
-      error = String(e);
+      error = localizeError(e);
     }
   });
   onDestroy(() => {
@@ -164,7 +164,7 @@
       meta = { ...meta, analysis };
       draw();
     } catch (e) {
-      error = String(e);
+      error = localizeError(e);
     } finally {
       analyzing = false;
     }
@@ -268,7 +268,7 @@
     <h3>{t("player.sections")}</h3>
     <div class="row">
       {#each analysis.sections as s, i (i)}
-        <button class="btn-small" onclick={() => backend.playerControl({ seek: s.start })} ondblclick={() => editSection(i)} title={t("player.edit")}>{s.label} · {s.name} ({fmt(s.start)})</button>
+        <button class="btn-small" onclick={() => backend.playerControl({ seek: s.start })} ondblclick={() => editSection(i)} title={t("player.edit")}>{s.label} · {hasKey(`section.${s.name}`) ? t(`section.${s.name}`) : s.name} ({fmt(s.start)})</button>
         <button class="btn-small btn-ghost" onclick={() => editSection(i)} aria-label={t("player.edit")}>✎</button>
       {/each}
     </div>

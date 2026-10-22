@@ -4,7 +4,7 @@
 ┌───────────────────────────── UI (Svelte 5, WebView) ─────────────────────────────┐
 │ src/App.svelte, src/ui/**   mapa · lecciones · ejercicios · práctica · canciones  │
 │                             biblioteca · reproductor · herramientas · ajustes     │
-│ src/i18n/       textos de interfaz (es-AR) y formateo Do/C                        │
+│ src/i18n/       textos de interfaz (en, es-AR) y formateo C/Do                    │
 │ src/state/      ajustes, progreso, navegación (persistidos vía backend)           │
 │ src/platform/   puente con el backend (Tauri invoke) + modo navegador para dev    │
 └──────────────┬──────────────────────────────────────────────┬────────────────────┘
@@ -21,7 +21,7 @@
 │                       test de nivel, corrección          │ └──────────────────────────────────────────┘
 │ src/core/songs/       fichas: disponibilidad y ejercicios│
 │ src/core/import/      MIDI, MusicXML/GP (alphaTab), tab  │
-│ src/content/es-AR/    textos de lecciones, preguntas,    │
+│ src/content/{en,es-AR}/ lecciones y preguntas            │
 │                       fichas de canciones                │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -35,7 +35,7 @@
 ## Flujo de una lección
 
 1. `Curriculum.nextLesson(rama, dominados)` → lección disponible si todos sus requisitos están dominados.
-2. `LessonPlayer` muestra el contenido (`src/content/es-AR/*`) con ejemplos declarativos (`examples.ts` → partitura/teclado/diapasón/audio).
+2. `LessonPlayer` muestra el contenido (`src/content/<idioma>/*`) con ejemplos declarativos (`examples.ts` → partitura/teclado/diapasón/audio).
 3. `lessonSession()` arma N ejercicios con los generadores de la lección, sobre `conocidos = cierre(requisitos) ∪ {concepto}`, ponderando lo que más se falló (`ItemStat`).
 4. `SessionRunner` vuelve a auditar cada ejercicio antes de mostrarlo, registra aciertos (`recordAnswer`) y al final `finishLesson()` marca el concepto como dominado si se supera el umbral (80 % por defecto) y crea su tarjeta de repaso (SM-2).
 

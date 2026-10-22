@@ -4,7 +4,7 @@
   import { backend, type LibraryItem } from "../../platform/bridge";
   import { detectKind } from "../../core/import";
   import { nav } from "../../state/nav.svelte";
-  import { t } from "../../i18n";
+  import { t, localizeError } from "../../i18n";
 
   let items = $state<LibraryItem[]>([]);
   let error = $state("");
@@ -34,7 +34,7 @@
       }
       await refresh();
     } catch (err) {
-      error = String(err);
+      error = localizeError(err);
     } finally {
       busy = false;
       if (input) input.value = "";

@@ -1,102 +1,112 @@
-# 🎵 Mussify
+<img src="public/icon.svg" width="72" alt="" />
 
-**App libre y offline para aprender música**: leer partitura, entender cómo suenan las notas, entrenar el oído, teoría de cero a armonía avanzada y canciones de rock en **piano, guitarra, bajo y batería**.
+# Mussify
 
-Para Linux y Android, desde un mismo código. **Sin cuentas, sin nube, sin telemetría.** Licencia GPL-3.0-or-later.
+**English** · [Español](README.es.md)
 
-## Capturas
+**A free, offline app to learn music**: read notation, understand how notes sound, train your ear, theory from zero to advanced harmony, and rock songs on **piano, guitar, bass and drums**.
 
-| Temario (libro) | Temario (mapa) |
+For Linux and Android, from a single codebase. **No accounts, no cloud, no telemetry.** Licensed GPL-3.0-or-later.
+
+## Screenshots
+
+| Syllabus (book) | Syllabus (map) |
 |---|---|
-| ![Temario](docs/screenshots/temario.png) | ![Mapa](docs/screenshots/mapa.png) |
+| ![Syllabus](docs/screenshots/syllabus.png) | ![Map](docs/screenshots/map.png) |
 
-| Lección con ejercicio intercalado |
+| Lesson with an inline exercise |
 |---|
-| ![Lección](docs/screenshots/leccion.png) |
+| ![Lesson](docs/screenshots/lesson.png) |
 
-| Ejercicio | Ficha de canción |
+| Exercise | Song page |
 |---|---|
-| ![Ejercicio](docs/screenshots/ejercicio.png) | ![Canción](docs/screenshots/cancion.png) |
+| ![Exercise](docs/screenshots/exercise.png) | ![Song](docs/screenshots/song.png) |
 
-| Instrumentos | Modo oscuro | Celular |
+| Instruments | Dark mode | Phone |
 |---|---|---|
-| ![Instrumentos](docs/screenshots/instrumentos.png) | ![Oscuro](docs/screenshots/oscuro.png) | ![Celular](docs/screenshots/movil.png) |
+| ![Instruments](docs/screenshots/instruments.png) | ![Dark](docs/screenshots/dark.png) | ![Phone](docs/screenshots/mobile.png) |
 
-## Qué tiene
+## Features
 
-- **Temario en forma de libro o de mapa** (capítulos y temas numerados con su porcentaje de dominio, o un mapa de los temas conectados) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
-- **Progresión estrictamente lineal**: cada lección enseña **un** concepto; nada aparece antes de aprenderse (ni notas, ni figuras, ni acordes, ni términos en los textos). Esto se verifica con tests sobre cada lección y con una auditoría que corre en la app antes de cada ejercicio.
-- **Ejercicios generados al azar** (con semilla) que ponderan lo que más fallás: lectura de notas, ubicar en el teclado o el diapasón, intervalos, acordes, escalas, armaduras, grados y funciones, progresiones de oído, dictado melódico y rítmico, tablatura, diagramas de acordes, grooves de batería, y más.
-- **Repaso espaciado** (SM-2) y práctica de "lo que más fallás".
-- **Test de nivel opcional** por rama: desbloquea solo lo que demostrás.
-- **Partituras propias**: pentagrama (claves de Sol, Fa, Do y percusión), tablatura y batería, con reproducción, cursor, tempo ajustable y loop por compases.
-- **Instrumentos en pantalla** con sonido de samples libres: piano (teclado táctil, mouse o teclado de compu), guitarra (afinaciones alternativas, zurdo), bajo de 4 y 5 cuerdas, pads de batería.
-- **Metrónomo** (compases simples, compuestos e irregulares, subdivisiones, acentos, tap tempo).
-- **Biblioteca**: importá MIDI, MusicXML, Guitar Pro (.gp3/.gp4/.gp5/.gpx/.gp), tablaturas en texto y audio (mp3, ogg, flac, wav, m4a). Si un archivo tiene contenido que todavía no aprendiste, la app avisa y ofrece verlo simplificado (solo la melodía, atenuar lo desconocido) o dejarlo pendiente.
-- **Sacar canciones de oído**: reproductor con loop A-B, **cambio de velocidad sin cambiar el tono**, ecualizador y filtros para aislar graves/medios/agudos, marcadores y notas personales por marca de tiempo.
-- **Análisis local de audio**: tempo, compás aproximado, tonalidad, acordes y secciones, todo en tu dispositivo; corregible a mano.
-- **Buscar y descargar audio con yt-dlp** (Linux), solo si lo pedís, con confirmación, con el interruptor de red y quedando en el registro.
-- **12 fichas de canciones** con análisis originales (estructura, progresiones, tonalidad, recurso principal, teoría vinculada): *Let It Be*, *Bohemian Rhapsody*, *Muchacha ojos de papel*, *Smoke on the Water*, *De música ligera*, *Wish You Were Here*, *Another One Bites the Dust*, *Come Together*, *Money*, *We Will Rock You*, *Back in Black*, *Rock and Roll*. Se habilitan por partes a medida que aprendés lo necesario.
-- **Progreso discreto**: racha, meta semanal, precisión por tipo de ejercicio, historial, "qué fallás más" y diario de práctica. Sin vidas, ligas ni monedas.
-- **Ajustes**: Do Re Mi / C D E / ambos, tema claro/oscuro, tamaño de interfaz, alto contraste, paleta para daltonismo, afinación de referencia (La4 = 440 Hz por defecto), red, respaldo cifrado, espacio usado.
-- Interfaz en **español rioplatense**, con todos los textos externalizados.
+- **Syllabus as a book or a map** (numbered chapters and topics with their mastery percentage, or a map of connected topics) with five branches: *Theory & ear* (common trunk, 152 lessons), *Piano*, *Guitar*, *Bass* and *Drums* (289 lessons in total).
+- **Strictly linear progression**: each lesson teaches **one** concept; nothing shows up before it's learned (no notes, note values, chords, or terms in the texts). This is verified by tests over every lesson and by an audit that runs in the app before each exercise.
+- **Randomly generated exercises** (seeded) weighted toward what you miss most: note reading, finding notes on the keyboard or fretboard, intervals, chords, scales, key signatures, degrees and functions, progressions by ear, melodic and rhythmic dictation, tab, chord diagrams, drum grooves, and more.
+- **Spaced repetition** (SM-2) and "what you miss most" practice.
+- **Optional placement test** per branch: unlocks only what you prove you know.
+- **Built-in notation engine**: staff (treble, bass, C and percussion clefs), tab and drums, with playback, cursor, adjustable tempo and bar looping.
+- **On-screen instruments** with free samples: piano (touch, mouse or computer keyboard), guitar (alternate tunings, left-handed), 4- and 5-string bass, drum pads.
+- **Metronome** (simple, compound and odd meters, subdivisions, accents, tap tempo).
+- **Library**: import MIDI, MusicXML, Guitar Pro (.gp3/.gp4/.gp5/.gpx/.gp), plain-text tabs and audio (mp3, ogg, flac, wav, m4a). If a file contains things you haven't learned yet, the app tells you and offers a simplified view (melody only, dim the unknown parts) or to keep it for later.
+- **Learn songs by ear**: player with A-B loop, **speed change without pitch change**, EQ and filters to isolate lows/mids/highs, markers and personal notes by timestamp.
+- **Local audio analysis**: tempo, approximate meter, key, chords and sections, all on your device; editable by hand.
+- **Search and download audio with yt-dlp** (Linux), only when you ask, with confirmation, behind the network switch and recorded in the log.
+- **12 song pages** with original analyses (structure, progressions, key, main device, linked theory): *Let It Be*, *Bohemian Rhapsody*, *Muchacha ojos de papel*, *Smoke on the Water*, *De música ligera*, *Wish You Were Here*, *Another One Bites the Dust*, *Come Together*, *Money*, *We Will Rock You*, *Back in Black*, *Rock and Roll*. They unlock section by section as you learn what's needed.
+- **Low-key progress**: streak, weekly goal, accuracy by exercise type, history, "what you miss most" and a practice journal. No lives, leagues or coins.
+- **Settings**: language, C D E / Do Re Mi / both, light/dark theme, interface size, high contrast, color-blind palette, reference pitch (A4 = 440 Hz by default), network, encrypted backup, storage used.
+- Interface and lessons in **English** (default) and **Rioplatense Spanish**; switch in *Settings → Language*. All texts are externalized.
 
-## Instalación
+## Installation
+
+Ready-made builds (AppImage and signed APK, with SHA-256 checksums) are on the [Releases](../../releases) page.
 
 ### Linux (CachyOS / Arch)
 
 ```bash
 sudo pacman -S --needed rust nodejs npm webkit2gtk-4.1 alsa-lib base-devel
-# opcional, para descargar audio:
+# optional, to download audio:
 sudo pacman -S yt-dlp ffmpeg
-git clone <este repositorio> mussify && cd mussify
-scripts/build-linux.sh            # compila, corre los tests y arma deb/rpm/AppImage
-./target/release/mussify          # o instalá el paquete de target/release/bundle/
+git clone <this repository> mussify && cd mussify
+scripts/build-linux.sh            # builds, runs the tests and makes deb/rpm/AppImage
+./target/release/mussify          # or install the package from target/release/bundle/
 ```
 
-Solo el binario, sin paquetes: `npm ci && npx tauri build --no-bundle`.
+Binary only, no packages: `npm ci && npx tauri build --no-bundle`.
 
 ### Android
 
-Requiere Android SDK + NDK y JDK 17.
+Requires the Android SDK + NDK and JDK 17.
 
 ```bash
 rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-scripts/build-android.sh --debug  # APK de depuración
+scripts/build-android.sh --debug  # debug APK
 adb install src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk
 ```
 
-El APK solo pide el permiso `INTERNET` (en Android la descarga con yt-dlp no está disponible; se importan archivos con el selector del sistema).
+The APK only requests the `INTERNET` permission (on Android, yt-dlp downloads are not available; files are imported with the system picker).
 
-## Desarrollo
+## Development
 
 ```bash
 npm ci
-npm run tauri dev        # app de escritorio con recarga en caliente
-npm run dev              # solo la UI en el navegador (audio por WebAudio, datos en localStorage)
-npm test                 # tests del núcleo, la progresión, el contenido y los importadores
-MUSSIFY_SEEDS=60 npm test   # más semillas para la auditoría de progresión
-cargo test --workspace   # audio, DSP, análisis, base de datos, respaldo
-npm run check            # tipos de TypeScript y Svelte
+npm run tauri dev        # desktop app with hot reload
+npm run dev              # UI only, in the browser (WebAudio sound, data in localStorage)
+npm test                 # tests for the core, progression, content (both languages) and importers
+MUSSIFY_SEEDS=60 npm test   # more seeds for the progression audit
+cargo test --workspace   # audio, DSP, analysis, database, backup
+npm run check            # TypeScript and Svelte types
 ```
 
-En modo desarrollo en el navegador, `?demo=N` marca como dominados los primeros N conceptos y `?view=lesson&id=read.treble.C4` abre una vista directamente.
+In browser development mode, `?demo=N` marks the first N concepts as mastered, `?view=lesson&id=read.treble.C4` opens a view directly and `?lang=es-AR` forces the language.
 
-## Privacidad y red
+Lesson content lives in `src/content/en/` and `src/content/es-AR/` (same lesson ids and examples), UI strings in `src/i18n/`. Each language has its own controlled vocabulary in `src/content/terms.ts`, so the tests catch any technical term used before it's taught.
 
-Ver [`PRIVACY.md`](PRIVACY.md). Para auditar vos mismo que no haya conexiones: `scripts/net-audit/run.sh target/release/mussify` (intercepta `connect()` en la app y en todos sus procesos hijos).
+## Privacy and network
 
-## Documentación
+See [`PRIVACY.md`](PRIVACY.md). To audit for yourself that there are no connections: `scripts/net-audit/run.sh target/release/mussify` (intercepts `connect()` in the app and all its child processes).
 
-- [`ARCHITECTURE.md`](ARCHITECTURE.md): módulos, flujo de datos y puntos de extensión (MIDI, micrófono, composición).
-- [`DECISIONS.md`](DECISIONS.md): elección de stack y demás decisiones técnicas.
-- [`THIRD_PARTY.md`](THIRD_PARTY.md) y [`docs/dependencies.md`](docs/dependencies.md): licencias.
+## Documentation
+
+The technical docs are written in Spanish:
+
+- [`ARCHITECTURE.md`](ARCHITECTURE.md): modules, data flow and extension points (MIDI, microphone, composition).
+- [`DECISIONS.md`](DECISIONS.md): stack choice and other technical decisions.
+- [`THIRD_PARTY.md`](THIRD_PARTY.md) and [`docs/dependencies.md`](docs/dependencies.md): licenses.
 - [`PRIVACY.md`](PRIVACY.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`packaging/README.md`](packaging/README.md).
 
-## Aviso sobre material de terceros
+## Third-party material
 
-Mussify no incluye partituras, tablaturas completas, letras ni grabaciones con derechos de autor. Las fichas de canciones son análisis originales. La descarga y el uso de material de terceros es responsabilidad de quien lo hace y es para práctica personal.
+Mussify does not include copyrighted scores, full tabs, lyrics or recordings. The song pages are original analyses. Downloading and using third-party material is the responsibility of whoever does it and is meant for personal practice.
 
-## Licencia
+## License
 
-GPL-3.0-or-later. Ver [`LICENSE`](LICENSE).
+GPL-3.0-or-later. See [`LICENSE`](LICENSE).

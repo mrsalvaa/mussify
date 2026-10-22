@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Traducción de mensajes y formateo de etiquetas según la nomenclatura elegida.
 import { ES_AR } from "./es-AR";
+import { EN } from "./en";
 import type { Label, Msg } from "../core/curriculum/types";
 import { pcName, pitchName, LATIN_LETTERS, ENGLISH_LETTERS, type NamingStyle } from "../core/theory/pitch";
-import { intervalName, intervalShort } from "../core/theory/interval";
+import type { Interval } from "../core/theory/interval";
 import { chordSymbol, type Chord } from "../core/theory/chord";
 
-const STRINGS: Record<string, Record<string, string>> = { "es-AR": ES_AR };
-let strings = ES_AR;
+const STRINGS: Record<string, Record<string, string>> = { en: EN, "es-AR": ES_AR };
+export const DEFAULT_LOCALE = "en";
+let strings = EN;
+let locale = DEFAULT_LOCALE;
 
 export type Naming = "latin" | "english" | "both";
 export interface FormatPrefs {
@@ -16,7 +19,33 @@ export interface FormatPrefs {
 let prefs: FormatPrefs = { naming: "latin" };
 
 export function setLocale(l: string): void {
-  strings = STRINGS[l] ?? ES_AR;
+  locale = STRINGS[l] ? l : DEFAULT_LOCALE;
+  strings = STRINGS[locale];
+  if (typeof document !== "undefined") document.documentElement.lang = locale;
+}
+
+export function currentLocale(): string {
+  return locale;
+}
+
+export const LOCALE_NAMES: Record<string, string> = { en: "English", "es-AR": "Español (Argentina)" };
+
+/** Nombre de un intervalo en el idioma actual ("major third" / "tercera mayor"). */
+export function intervalText(iv: Interval, short = false): string {
+  if (short) return t("iv.short", { n: iv.size, q: t(`ivqs.${iv.quality}`) });
+  if (iv.size === 1 && iv.quality === "P") return t("iv.unison");
+  if (iv.size === 8 && iv.quality === "P") return t("iv.octave");
+  const size = hasKey(`ivs.${iv.size}`) ? t(`ivs.${iv.size}`) : `${iv.size}`;
+  return t("iv.fmt", { size, q: t(`ivq.${iv.quality}`) });
+}
+
+/** Errores del backend: "E_CODIGO" o "E_CODIGO::detalle" se traducen; el resto se muestra tal cual. */
+export function localizeError(e: unknown): string {
+  const s = String(e).replace(/^Error:\s*/, "");
+  const m = /^E_([A-Z_]+)(?:::([\s\S]*))?$/.exec(s);
+  if (!m) return s;
+  const key = "err." + m[1].toLowerCase().replace(/_([a-z])/g, (_x, c: string) => c.toUpperCase());
+  return hasKey(key) ? t(key, { detail: m[2] ?? "" }) : s;
 }
 
 export function setFormatPrefs(p: FormatPrefs): void {
@@ -79,7 +108,7 @@ export function formatLabel(l: Label): string {
     case "pitch":
       return prefs.naming === "english" ? pitchName(l.pitch, "english") : pitchName(l.pitch, "latin");
     case "interval":
-      return l.short ? intervalShort(l.iv) : intervalName(l.iv);
+      return intervalText(l.iv, l.short);
     case "chord":
       return chordText(l.chord);
     case "number":

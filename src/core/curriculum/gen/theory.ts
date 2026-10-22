@@ -248,19 +248,21 @@ export const scalePattern: Generator = {
   make(ctx) {
     const scales = knownScales(ctx.known).filter((s) => s !== "majorPentatonic" && s !== "minorPentatonic" && s !== "blues");
     const type = ctx.rng.pick(scales);
-    const pat = stepPattern(type).join(" – ");
-    const others = scales.filter((s) => stepPattern(s).join(" – ") !== pat);
+    const pat = stepPattern(type).join(" ");
+    const others = scales.filter((s) => stepPattern(s).join(" ") !== pat);
     const wrong = new Set<string>();
-    for (const o of others) wrong.add(stepPattern(o).join(" – "));
+    for (const o of others) wrong.add(stepPattern(o).join(" "));
     // patrones falsos rotados
     const steps = stepPattern(type);
     for (let i = 1; i < steps.length && wrong.size < 4; i++) {
-      const rot = [...steps.slice(i), ...steps.slice(0, i)].join(" – ");
+      const rot = [...steps.slice(i), ...steps.slice(0, i)].join(" ");
       if (rot !== pat) wrong.add(rot);
     }
+    // cada paso es una clave traducible (T/S en español, W/H en inglés)
+    const label = (p: string): Label => ({ kind: "names", items: p.split(" ").map((x) => L.msg(`step.${x}`)) });
     return {
       prompt: { text: msg("ex.scalePattern.prompt", { scale: L.msg(`scale.${type}`) }) },
-      answer: choice(ctx.rng, L.text(pat), [...wrong].map(L.text)),
+      answer: choice(ctx.rng, label(pat), [...wrong].map(label)),
       targets: [SCALE_CONCEPT[type]!],
       uses: [SCALE_CONCEPT[type]!, "t.semitone"],
       item: `${SCALE_CONCEPT[type]}.pattern`,

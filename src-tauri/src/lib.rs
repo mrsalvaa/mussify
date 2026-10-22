@@ -170,13 +170,13 @@ fn safe_ext(name: &str) -> String {
 /// Agrega un archivo a la biblioteca. Cuerpo: bytes crudos; encabezados: x-name, x-kind.
 #[tauri::command]
 fn library_add(state: State<AppState>, request: Request<'_>) -> Res<LibraryItem> {
-    let InvokeBody::Raw(bytes) = request.body() else { return Err("Se esperaban bytes".into()) };
+    let InvokeBody::Raw(bytes) = request.body() else { return Err("E_BAD_REQUEST".into()) };
     let h = request.headers();
     let get = |k: &str| h.get(k).and_then(|v| v.to_str().ok()).map(|s| percent_decode(s)).unwrap_or_default();
     let name = get("x-name");
     let kind = get("x-kind");
     if bytes.len() > 400 * 1024 * 1024 {
-        return Err("El archivo es demasiado grande (máximo 400 MB)".into());
+        return Err("E_TOO_BIG".into());
     }
     let id = new_id();
     let file = format!("{id}.{}", safe_ext(&name));
@@ -272,10 +272,10 @@ fn backup_export(state: State<AppState>, password: Option<String>, include_score
 
 #[tauri::command]
 fn backup_import(state: State<AppState>, request: Request<'_>) -> Res<usize> {
-    let InvokeBody::Raw(bytes) = request.body() else { return Err("Se esperaban bytes".into()) };
+    let InvokeBody::Raw(bytes) = request.body() else { return Err("E_BAD_REQUEST".into()) };
     let pw = request.headers().get("x-password").and_then(|v| v.to_str().ok()).map(percent_decode);
     let payload = backup::open(bytes, pw.as_deref())?;
-    let kv = payload["kv"].as_object().ok_or("Respaldo sin datos")?;
+    let kv = payload["kv"].as_object().ok_or("E_NOT_BACKUP")?;
     let mut n = 0;
     for (k, v) in kv {
         // la configuración de red no se importa: siempre arranca apagada

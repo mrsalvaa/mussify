@@ -63,7 +63,7 @@ pub fn decode_bytes(bytes: Vec<u8>, ext_hint: Option<&str>) -> Result<Pcm, Strin
 }
 
 pub fn decode_file(path: &std::path::Path) -> Result<Pcm, String> {
-    let f = std::fs::File::open(path).map_err(|e| format!("No pude abrir el archivo: {e}"))?;
+    let f = std::fs::File::open(path).map_err(|e| format!("E_AUDIO_OPEN::{e}"))?;
     let ext = path.extension().and_then(|e| e.to_str()).map(|s| s.to_lowercase());
     decode_source(Box::new(f), ext.as_deref())
 }
@@ -76,12 +76,12 @@ fn decode_source(src: Box<dyn MediaSource>, ext_hint: Option<&str>) -> Result<Pc
     }
     let probed = symphonia::default::get_probe()
         .format(&hint, mss, &FormatOptions::default(), &MetadataOptions::default())
-        .map_err(|e| format!("Formato de audio no reconocido: {e}"))?;
+        .map_err(|e| format!("E_AUDIO_FORMAT::{e}"))?;
     let mut format = probed.format;
-    let track = format.default_track().ok_or("El archivo no tiene pistas de audio")?.clone();
+    let track = format.default_track().ok_or("E_AUDIO_EMPTY")?.clone();
     let mut decoder = symphonia::default::get_codecs()
         .make(&track.codec_params, &DecoderOptions::default())
-        .map_err(|e| format!("Códec no soportado: {e}"))?;
+        .map_err(|e| format!("E_AUDIO_FORMAT::{e}"))?;
     let mut rate = track.codec_params.sample_rate.unwrap_or(44100);
     let mut channels = track.codec_params.channels.map(|c| c.count()).unwrap_or(2);
     let mut data: Vec<f32> = Vec::new();
@@ -91,7 +91,7 @@ fn decode_source(src: Box<dyn MediaSource>, ext_hint: Option<&str>) -> Result<Pc
             Ok(p) => p,
             Err(SymError::IoError(_)) => break,
             Err(SymError::ResetRequired) => break,
-            Err(e) => return Err(format!("Error leyendo audio: {e}")),
+            Err(e) => return Err(format!("E_AUDIO_FORMAT::{e}")),
         };
         if packet.track_id() != track.id {
             continue;
@@ -109,11 +109,11 @@ fn decode_source(src: Box<dyn MediaSource>, ext_hint: Option<&str>) -> Result<Pc
                 data.extend_from_slice(sb.samples());
             }
             Err(SymError::DecodeError(_)) => continue,
-            Err(e) => return Err(format!("Error decodificando: {e}")),
+            Err(e) => return Err(format!("E_AUDIO_FORMAT::{e}")),
         }
     }
     if data.is_empty() {
-        return Err("El archivo de audio está vacío".into());
+        return Err("E_AUDIO_EMPTY".into());
     }
     Ok(Pcm { rate, channels, data })
 }

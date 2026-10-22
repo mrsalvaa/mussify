@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { backend, type SearchResult, type ToolInfo } from "../../platform/bridge";
   import { nav } from "../../state/nav.svelte";
-  import { t } from "../../i18n";
+  import { t, localizeError } from "../../i18n";
 
   let allowed = $state(false);
   let tools = $state<ToolInfo | null>(null);
@@ -26,7 +26,7 @@
     try {
       results = await backend.ytSearch(query);
     } catch (e) {
-      msg = String(e);
+      msg = localizeError(e);
     } finally {
       busy = false;
     }
@@ -40,7 +40,7 @@
       msg = t("dl.done");
       nav.go({ view: "item", id: it.id });
     } catch (e) {
-      msg = String(e);
+      msg = localizeError(e);
     } finally {
       busy = false;
     }
@@ -53,7 +53,7 @@
   <h1>{t("dl.title")}</h1>
   <p class="muted small">{t("lib.disclaimer")}</p>
   {#if tools && !tools.supported}
-    <div class="card warn"><p>{tools.reason}</p><p>{t("dl.androidAlt")}</p></div>
+    <div class="card warn"><p>{localizeError(tools.reason)}</p><p>{t("dl.androidAlt")}</p></div>
   {:else if !allowed}
     <div class="card warn">
       <p>{t("dl.netOff")}</p>

@@ -99,7 +99,7 @@
         <label class="col small">{t("inst.octaves")}<select bind:value={octaves}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option><option value={4}>4</option></select></label>
       {:else}
         <label class="col small">{t("inst.tuning")}
-          <select bind:value={tuningId}>{#each tunings as tt (tt.id)}<option value={tt.id}>{tt.name}</option>{/each}</select>
+          <select bind:value={tuningId}>{#each tunings as tt (tt.id)}<option value={tt.id}>{t(`tuning.${tt.id}`)}</option>{/each}</select>
         </label>
       {/if}
       <label class="row small"><input type="checkbox" bind:checked={showNames} />{t("inst.names")}</label>

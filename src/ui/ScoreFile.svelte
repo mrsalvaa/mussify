@@ -9,7 +9,7 @@
   import { progress } from "../state/progress.svelte";
   import { lessonContent } from "../content";
   import { playSeq, stopSeq, CH } from "../platform/audio";
-  import { t } from "../i18n";
+  import { t, localizeError } from "../i18n";
   import ScoreView from "./ScoreView.svelte";
   import { nav } from "../state/nav.svelte";
 
@@ -33,7 +33,7 @@
       report = analyzeImport(score, known);
       view = report.allKnown ? "full" : item.meta.view ? (item.meta.view as typeof view) : "ask";
     } catch (e) {
-      error = t("lib.cannotRead", { error: String(e) });
+      error = t("lib.cannotRead", { error: localizeError(e) });
     }
   });
   onDestroy(() => void stopSeq(CH.score));

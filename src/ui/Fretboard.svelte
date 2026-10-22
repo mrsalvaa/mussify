@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <script lang="ts">
   import { type Pitch, midi, fromMidi } from "../core/theory/pitch";
-  import { noteLabel } from "../i18n";
+  import { noteLabel, t } from "../i18n";
   import { backend } from "../platform/bridge";
   import { prefs } from "../state/prefs.svelte";
 
@@ -48,7 +48,7 @@
   }
 </script>
 
-<div class="fb" role="group" aria-label={instrument === "bass" ? "Diapasón de bajo" : "Diapasón de guitarra"}>
+<div class="fb" role="group" aria-label={t(instrument === "bass" ? "aria.fretboardBass" : "aria.fretboardGuitar")}>
   <svg viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMid meet">
     <rect x={Math.min(lineX(0), lineX(frets))} y="15" width={Math.abs(lineX(frets) - lineX(0))} height={n * SH} class="wood" />
     {#each DOTS.filter((d) => d <= frets) as d (d)}

@@ -29,7 +29,7 @@ export function parseTextTab(text: string): TextTabResult {
     }
   }
   if (cur.length >= 4) blocks.push(cur);
-  if (!blocks.length) throw new Error("No encontré renglones de tablatura (líneas como e|---0---|)");
+  if (!blocks.length) throw new Error("E_NO_TAB");
   const strings = blocks[0].length;
   const tuning: Tuning = strings === 4 ? BASS4 : strings === 5 ? BASS5 : STANDARD;
   const instrument = strings <= 5 ? "bass" : "guitar";

@@ -106,7 +106,7 @@ impl Db {
 
     pub fn library_get(&self, id: &str) -> Result<LibraryItem, String> {
         let c = self.conn.lock().map_err(|e| e.to_string())?;
-        c.query_row("SELECT id,title,kind,file,size,created,meta FROM library WHERE id=?1", params![id], Self::row).map_err(|_| "No existe ese elemento de la biblioteca".to_string())
+        c.query_row("SELECT id,title,kind,file,size,created,meta FROM library WHERE id=?1", params![id], Self::row).map_err(|_| "E_NOT_FOUND".to_string())
     }
 
     pub fn library_insert(&self, it: &LibraryItem) -> Result<(), String> {

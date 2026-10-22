@@ -4,6 +4,6 @@ import { mount } from "svelte";
 import App from "./App.svelte";
 import { loadContent } from "./content";
 
-loadContent("es-AR");
+loadContent("en");
 const app = mount(App, { target: document.getElementById("app")! });
 export default app;

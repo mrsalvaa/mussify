@@ -4,14 +4,12 @@ import { describe, expect, it } from "vitest";
 import { Curriculum } from "../src/core/curriculum/engine";
 import { auditExample, buildExample } from "../src/core/curriculum/examples";
 import { allContent, loadContent } from "../src/content";
-import { TERMS_ES, stripMarkers } from "../src/content/terms";
+import { stripMarkers, termsFor } from "../src/content/terms";
 import type { ConceptId } from "../src/core/curriculum/types";
 
-loadContent("es-AR");
 const cur = new Curriculum();
-const content = allContent();
 
-function textsOf(id: string): string[] {
+function textsOf(content: ReturnType<typeof allContent>, id: string): string[] {
   const c = content[id];
   if (!c) return [];
   const out = [c.title];
@@ -24,7 +22,10 @@ function textsOf(id: string): string[] {
   return out;
 }
 
-describe("contenido es-AR", () => {
+for (const locale of ["en", "es-AR"]) describe(`contenido ${locale}`, () => {
+  loadContent(locale);
+  const content = allContent();
+  const TERMS = termsFor(locale);
   it("cada lección tiene contenido y no sobra contenido", () => {
     const missing = cur.lessons.filter((l) => !content[l.id]).map((l) => l.id);
     expect(missing).toEqual([]);
@@ -47,10 +48,10 @@ describe("contenido es-AR", () => {
           expect(auditExample(b.ex, known), JSON.stringify(b.ex)).toEqual([]);
         }
       }
-      for (const t of textsOf(l.id)) {
+      for (const t of textsOf(content, l.id)) {
         const { plain, marked } = stripMarkers(t);
         for (const m of marked) expect(known.has(m), `${l.id}: término marcado ${m} sin aprender`).toBe(true);
-        for (const [re, concepts] of TERMS_ES) {
+        for (const [re, concepts] of TERMS) {
           if (re.test(plain)) expect(concepts.some((x) => known.has(x)), `${l.id}: "${plain.match(re)?.[0]}" sin aprender (${concepts.join("|")}) en: ${plain}`).toBe(true);
         }
       }

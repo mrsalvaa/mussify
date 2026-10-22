@@ -245,3 +245,30 @@ export function placementSession(cur: Curriculum, block: PlacementBlock, mastere
 
 export const PLACEMENT_THRESHOLD = 0.9;
 export const DEFAULT_MASTERY_THRESHOLD = 0.8;
+
+/** Práctica por tipo de ejercicio (oído, lectura, ritmo): solo lecciones dominadas que usan esos generadores. */
+export function practiceByGenerators(cur: Curriculum, gens: string[], mastered: ReadonlySet<ConceptId>, opts: SessionOptions): Exercise[] {
+  const rng = new Rng(opts.seed ^ 0xabc);
+  const length = opts.length ?? 12;
+  const candidates = cur.lessons.filter((l) => mastered.has(l.concept) && l.exercises.some((e) => gens.includes(e.gen)));
+  const out: Exercise[] = [];
+  for (let i = 0; out.length < length && i < length * 6 && candidates.length; i++) {
+    const lesson = rng.weighted(candidates, (l) => 1 + (opts.stats ? Object.entries(opts.stats).filter(([k]) => k.startsWith(l.concept)).reduce((a, [, s]) => a + s.wrong, 0) : 0));
+    const ctx: GenContext = { rng, known: mastered, focus: lesson.concept, weight: weightFn(opts.stats) };
+    const specs = lesson.exercises.filter((e) => gens.includes(e.gen) && runnable(e, ctx));
+    if (!specs.length) continue;
+    out.push(makeExercise(rng.pick(specs), ctx, `gen:${lesson.id}#${i}`));
+  }
+  return out;
+}
+
+export const PRACTICE_GROUPS: Record<string, string[]> = {
+  intervals: ["intervalEar"],
+  chords: ["chordEar", "guitarChordEar"],
+  progressions: ["progressionEar", "cadenceIdentify"],
+  melodic: ["melodicDictation"],
+  rhythmic: ["rhythmDictation", "rhythmBuild"],
+  scales: ["scaleEar", "modeIdentify"],
+  reading: ["readNote", "findNote", "staffToKey", "tabRead", "drumPieceRead", "keySignature", "intervalName", "chordRead"],
+  rhythm: ["figureValue", "rhythmSum", "measureComplete", "rhythmRead", "meterEar", "grooveRead", "grooveEar"],
+};

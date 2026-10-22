@@ -70,3 +70,10 @@ export function stripMarkers(text: string): { plain: string; marked: string[] } 
   });
   return { plain, marked };
 }
+
+/** ¿Se puede mostrar este texto con lo que se sabe? (ningún término técnico sin aprender) */
+export function textAllowed(text: string, known: ReadonlySet<string>): boolean {
+  const { plain, marked } = stripMarkers(text);
+  if (marked.some((m) => !known.has(m))) return false;
+  return TERMS_ES.every(([re, concepts]) => !re.test(plain) || concepts.some((c) => known.has(c)));
+}

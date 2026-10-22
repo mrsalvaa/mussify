@@ -36,7 +36,7 @@ function convertStaff(score: ATScore, track: ATTrack, staff: ATStaff, id: string
     const events: ScoreEvent[] = [];
     const voice = bar.voices[0];
     for (const beat of voice?.beats ?? []) {
-      if (beat.graceType && beat.graceType !== 0) continue;
+      if (beat.graceType) continue;
       const base = DUR[beat.duration as number] ?? "q";
       const d: Duration = { base };
       if (beat.dots) d.dots = beat.dots;

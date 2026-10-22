@@ -112,3 +112,30 @@ describe("repaso y test de nivel", () => {
     }
   });
 });
+
+import { practiceByGenerators, PRACTICE_GROUPS, practiceSession } from "../src/core/curriculum/engine";
+describe("práctica por tipo", () => {
+  it("solo usa lo dominado", () => {
+    const order = cur.topoOrder();
+    for (const cut of [30, 120, order.length]) {
+      const mastered = new Set(order.slice(0, cut));
+      for (const gens of Object.values(PRACTICE_GROUPS)) for (const e of practiceByGenerators(cur, gens, mastered, { seed: cut })) expect(auditExercise(e, mastered), e.generator).toEqual([]);
+      for (const e of practiceSession(cur, "all", mastered, { seed: cut })) expect(auditExercise(e, mastered)).toEqual([]);
+    }
+  });
+});
+
+import { sightMeasure } from "../src/core/curriculum/sight";
+import { scoreRequirements, missing } from "../src/core/curriculum/extract";
+describe("lectura rápida", () => {
+  it("solo usa notas, figuras y compases aprendidos", () => {
+    const order = cur.topoOrder();
+    for (const cut of [40, 70, 130, order.length]) {
+      const known = new Set(order.slice(0, cut));
+      for (let s = 1; s < 40; s++) {
+        const m = sightMeasure(known, s);
+        if (m) expect(missing(scoreRequirements(m.score), known)).toEqual([]);
+      }
+    }
+  });
+});

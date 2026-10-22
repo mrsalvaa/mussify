@@ -243,6 +243,7 @@ export function renderScore(score: Score, opts: RenderOptions = {}): RenderResul
 
   // --- 3. Dibujo sistema por sistema ---
   let y = 0.5 * sp;
+  let maxX = 0;
   systems.forEach((sys, si) => {
     const measuresIdx: number[] = [];
     for (let m = sys.from; m <= sys.to; m++) measuresIdx.push(m);
@@ -277,6 +278,7 @@ export function renderScore(score: Score, opts: RenderOptions = {}): RenderResul
     const stretch = isLast && sys.natural < usable * 0.75 ? 1 : contentNatural > 0 ? target / contentNatural : 1;
     const x0 = 1 * sp;
     const xEnd = isLast && stretch === 1 ? x0 + sys.natural * sp : x0 + usable * sp;
+    maxX = Math.max(maxX, xEnd);
 
     // Líneas de pentagrama y tablatura
     for (const L of layouts) {
@@ -372,7 +374,7 @@ export function renderScore(score: Score, opts: RenderOptions = {}): RenderResul
     y = (layouts[layouts.length - 1]?.bottom ?? y) + 2 * sp;
   });
 
-  return { width, height: y, prims, events: evBoxes, measures: measureBoxes };
+  return { width: Math.min(width, Math.ceil(maxX + sp)), height: y, prims, events: evBoxes, measures: measureBoxes };
 }
 
 function drawTimeSig(prims: Prim[], x: number, top: number, sp: number, ts: TimeSignature) {

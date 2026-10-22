@@ -2,7 +2,7 @@
 
 **App libre y offline para aprender música**: leer partitura, entender cómo suenan las notas, entrenar el oído, teoría de cero a armonía avanzada y canciones de rock en **piano, guitarra, bajo y batería**.
 
-Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. **Sin cuentas, sin nube, sin telemetría.** Licencia GPL-3.0-or-later.
+Para Linux y Android, desde un mismo código. **Sin cuentas, sin nube, sin telemetría.** Licencia GPL-3.0-or-later.
 
 ## Capturas
 

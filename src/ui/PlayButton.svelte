@@ -29,29 +29,28 @@
 </script>
 
 <button class="play {big ? 'big' : ''} {playing ? 'on' : ''}" onclick={play} aria-label={label ?? t("common.play")}>
-  <span class="ico" aria-hidden="true">{playing ? "🔊" : "▶"}</span>
+  <span class="ico" aria-hidden="true">▶</span>
   {#if label !== ""}<span>{label ?? t("common.play")}</span>{/if}
 </button>
 
 <style>
   .play {
-    background: var(--blue);
-    border-color: var(--blue-dark);
-    color: #fff;
     display: inline-flex;
     align-items: center;
     gap: 0.5em;
+    border-color: var(--accent);
+    color: var(--accent);
+    background: transparent;
   }
   .play.big {
-    font-size: 1.15rem;
-    min-height: 64px;
-    padding: 0.7em 1.6em;
-    border-radius: 20px;
+    font-size: 1.05rem;
+    min-height: 50px;
+    padding: 0.5em 1.4em;
   }
   .play.on {
-    filter: brightness(1.08);
+    background: var(--accent-soft);
   }
   .ico {
-    font-size: 1.1em;
+    font-size: 0.9em;
   }
 </style>

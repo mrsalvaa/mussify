@@ -104,11 +104,11 @@
 {:else}
   {#if !report.allKnown}
     <div class="card warn">
-      <p><strong>⚠️ {t("lib.unknownContent")}</strong></p>
+      <p><strong>{t("lib.unknownContent")}</strong></p>
       <p class="small">{t("lib.missingList")}
         {#each report.missing.slice(0, 12) as r, i (i)}
           {@const lid = r.anyOf.find((c) => cur.byConcept.has(c))}
-          <span class="pill">{lid && cur.isUnlocked(lid, known) ? lessonContent(lid)?.title : "🔒"}</span>
+          <span class="pill">{lid && cur.isUnlocked(lid, known) ? lessonContent(lid)?.title : "—"}</span>
         {/each}
         {#if report.unknownChords.length}<span class="pill">{t("lib.unknownChords", { n: report.unknownChords.length })}</span>{/if}
       </p>

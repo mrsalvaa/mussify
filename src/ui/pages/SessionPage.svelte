@@ -39,7 +39,6 @@
   {:else}
     {@const ok = done.filter((x) => x.correct).length}
     <div class="col center pop">
-      <div class="big">{ok === done.length ? "🏆" : "👏"}</div>
       <h1>{t("lesson.score", { ok, total: done.length, pct: Math.round((ok / done.length) * 100) })}</h1>
       <button class="btn-primary" onclick={() => nav.back()}>{t("common.continue")}</button>
     </div>

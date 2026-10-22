@@ -164,7 +164,7 @@
     fill: var(--red);
   }
   .name {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 12px;
     font-weight: 800;
     fill: #555;

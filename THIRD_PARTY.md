@@ -8,7 +8,8 @@ Mussify se distribuye bajo **GPL-3.0-or-later**. Todo lo que incluye es software
 |---|---|---|---|---|
 | **FluidR3_GM** (Frank Wen) | 3.1 (paquete `soundfont-fluid` de Arch) | MIT | https://member.keymusician.com/Member/FluidR3_GM/ | Fuente de los 89 samples de `crates/engine/samples/` (piano, guitarra acústica, guitarra distorsionada, bajo, batería), renderizados con `scripts/render_samples.py`. Aviso de copyright y permiso reproducidos abajo. |
 | **Bravura** (Steinberg) | 1.48 (woff2, rama master) | SIL OFL 1.1 | https://github.com/steinbergmedia/bravura | Glifos musicales SMuFL del grabado de partituras. `assets/fonts/Bravura-OFL.txt` |
-| **Nunito** (The Nunito Project Authors) | 3.602 (variable) | SIL OFL 1.1 | https://github.com/googlefonts/nunito | Tipografía de la interfaz. `assets/fonts/Nunito-OFL.txt` |
+| **Source Serif 4** (Adobe) | 4.004 (variable) | SIL OFL 1.1 | https://github.com/adobe-fonts/source-serif | Tipografía de títulos. `assets/fonts/SourceSerif4-OFL.txt` |
+| **Source Sans 3** (Adobe) | 3.052 (variable) | SIL OFL 1.1 | https://github.com/adobe-fonts/source-sans | Tipografía de texto. `assets/fonts/SourceSans3-OFL.txt` |
 | Ícono de la app | — | GPL-3.0-or-later | Este proyecto (`public/icon.svg`) | — |
 
 ### Aviso de FluidR3_GM

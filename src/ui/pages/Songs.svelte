@@ -31,7 +31,7 @@
             {:else if partial}
               <span class="pill">◐ {t("songs.partial")}</span>
             {:else}
-              <span class="pill">🔒 {t("songs.missing", { n: st.path.length })}</span>
+              <span class="pill">{t("songs.missing", { n: st.path.length })}</span>
             {/if}
           </span>
         </button>
@@ -47,10 +47,11 @@
     align-items: flex-start;
     gap: 0.35rem;
     text-align: left;
-    border-left: 8px solid var(--c);
     min-height: 120px;
+    font-weight: 400;
   }
   .title {
-    font-size: 1.15rem;
+    font-family: var(--serif);
+    font-size: 1.2rem;
   }
 </style>

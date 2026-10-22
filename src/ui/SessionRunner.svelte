@@ -75,15 +75,14 @@
   }
   .bar {
     flex: 1;
-    height: 16px;
+    height: 3px;
     background: var(--border);
-    border-radius: 99px;
+    border-radius: 2px;
     overflow: hidden;
   }
   .fill {
     height: 100%;
-    background: var(--green);
-    border-radius: 99px;
+    background: var(--accent);
     transition: width 0.3s;
   }
   .count {

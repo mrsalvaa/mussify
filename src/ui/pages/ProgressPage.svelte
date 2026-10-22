@@ -25,9 +25,9 @@
   <button class="btn-ghost" onclick={() => nav.back()}>← {t("common.back")}</button>
   <h1>{t("progress.title")}</h1>
   <div class="grid">
-    <div class="card stat"><span class="big">🔥 {streak()}</span><span class="muted">{t("progress.streak")}</span></div>
-    <div class="card stat"><span class="big">🎯 {weeklySessions()}/{prefs.weeklyGoal}</span><span class="muted">{t("progress.weekly")}</span></div>
-    <div class="card stat"><span class="big">⭐ {Object.keys(progress.mastered).length}</span><span class="muted">{t("progress.mastered")}</span></div>
+    <div class="card stat"><span class="big">{streak()}</span><span class="muted">{t("progress.streak")}</span></div>
+    <div class="card stat"><span class="big">{weeklySessions()}/{prefs.weeklyGoal}</span><span class="muted">{t("progress.weekly")}</span></div>
+    <div class="card stat"><span class="big">{Object.keys(progress.mastered).length}</span><span class="muted">{t("progress.mastered")}</span></div>
   </div>
 
   <h2>{t("progress.byBranch")}</h2>
@@ -40,7 +40,7 @@
   <h2>{t("progress.accuracy")}</h2>
   {#if !acc.length}<p class="muted">{t("progress.none")}</p>{/if}
   {#each acc as a (a.g)}
-    <div class="row bar-row"><span class="label">{a.name}</span><div class="meter"><div style="width:{a.pct}%; background: var(--green)"></div></div><span class="small">{a.pct}% <span class="muted">({a.seen})</span></span></div>
+    <div class="row bar-row"><span class="label">{a.name}</span><div class="meter"><div style="width:{a.pct}%; background: var(--accent)"></div></div><span class="small">{a.pct}% <span class="muted">({a.seen})</span></span></div>
   {/each}
 
   <h2>{t("progress.weakest")}</h2>
@@ -67,8 +67,9 @@
     align-items: center;
   }
   .big {
-    font-size: 1.8rem;
-    font-weight: 900;
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 600;
   }
   .bar-row {
     flex-wrap: nowrap;
@@ -80,9 +81,9 @@
   }
   .meter {
     flex: 1;
-    height: 12px;
+    height: 4px;
     background: var(--border);
-    border-radius: 99px;
+    border-radius: 2px;
     overflow: hidden;
   }
   .meter div {

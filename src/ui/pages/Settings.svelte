@@ -95,8 +95,8 @@
     <label class="col">{t("settings.uiScale")}: {Math.round(prefs.uiScale * 100)}%
       <input type="range" min="0.8" max="1.6" step="0.05" bind:value={prefs.uiScale} onchange={savePrefs} />
     </label>
-    <label class="row"><input type="checkbox" bind:checked={prefs.highContrast} onchange={savePrefs} /> {t("settings.contrast")}</label>
-    <label class="row"><input type="checkbox" bind:checked={prefs.colorblind} onchange={savePrefs} /> {t("settings.colorblind")}</label>
+    <label class="row"><input type="checkbox" bind:checked={prefs.highContrast} onchange={savePrefs} />{t("settings.contrast")}</label>
+    <label class="row"><input type="checkbox" bind:checked={prefs.colorblind} onchange={savePrefs} />{t("settings.colorblind")}</label>
     <label class="col">{t("settings.language")}
       <select bind:value={prefs.locale} onchange={savePrefs}>{#each AVAILABLE_LOCALES as l (l)}<option value={l}>{l === "es-AR" ? "Español (Argentina)" : l}</option>{/each}</select>
     </label>
@@ -125,8 +125,8 @@
     <label class="col">{t("settings.weeklyGoal")}: {prefs.weeklyGoal}
       <input type="range" min="1" max="21" step="1" bind:value={prefs.weeklyGoal} onchange={savePrefs} />
     </label>
-    <label class="row"><input type="checkbox" bind:checked={prefs.leftHanded} onchange={savePrefs} /> {t("settings.leftHanded")}</label>
-    <label class="row"><input type="checkbox" bind:checked={prefs.bass5} onchange={savePrefs} /> {t("settings.bass5")}</label>
+    <label class="row"><input type="checkbox" bind:checked={prefs.leftHanded} onchange={savePrefs} />{t("settings.leftHanded")}</label>
+    <label class="row"><input type="checkbox" bind:checked={prefs.bass5} onchange={savePrefs} />{t("settings.bass5")}</label>
   </section>
 
   <h2>{t("settings.network")}</h2>
@@ -156,8 +156,8 @@
   <section class="card col">
     <label class="col">{t("settings.password")}<input type="password" bind:value={password} autocomplete="new-password" /></label>
     <div class="row">
-      <button class="btn-blue" onclick={exportBackup}>💾 {t("settings.export")}</button>
-      <button onclick={() => fileInput.click()}>📂 {t("settings.import")}</button>
+      <button class="btn-blue" onclick={exportBackup}>{t("settings.export")}</button>
+      <button onclick={() => fileInput.click()}>{t("settings.import")}</button>
       <input bind:this={fileInput} type="file" accept=".json,application/json" class="sr-only" onchange={importBackup} />
     </div>
   </section>

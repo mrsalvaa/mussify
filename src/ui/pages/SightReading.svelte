@@ -68,7 +68,7 @@
     <button class="btn-ghost" onclick={() => nav.back()}>← {t("common.back")}</button>
     <h1 class="grow">{t("practice.sightReading")}</h1>
     <span class="pill">♩ = {tempo}</span>
-    <span class="pill">🔥 {streak} · 🏆 {best}</span>
+    <span class="pill">{streak} ·  {best}</span>
   </div>
   <p class="muted">{t("practice.sightReadingDesc")}</p>
   {#if m}

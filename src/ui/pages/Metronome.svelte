@@ -70,7 +70,7 @@
       <button onclick={() => { bpm = Math.max(30, bpm - 1); restart(); }}>−1</button>
       <button onclick={() => { bpm = Math.min(260, bpm + 1); restart(); }}>+1</button>
       <button onclick={() => { bpm = Math.min(260, bpm + 5); restart(); }}>+5</button>
-      <button onclick={tap}>👆 {t("metro.tap")}</button>
+      <button onclick={tap}>{t("metro.tap")}</button>
     </div>
     <div class="beats" aria-label={t("metro.accents")}>
       {#each accents as a, i (i)}

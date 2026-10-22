@@ -58,7 +58,6 @@
     {/key}
   {:else if phase === "passed"}
     <div class="col center pop">
-      <div class="big">🚀</div>
       <h1>{t("placement.passed", { n: unlocked })}</h1>
       <div class="row">
         <button onclick={() => nav.reset({ view: "home", branch })}>{t("common.done")}</button>

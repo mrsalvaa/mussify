@@ -52,11 +52,11 @@
     <p class="muted small">{t("songs.disclaimer")}</p>
 
     <div class="card facts">
-      <div><span class="muted small">{t("songs.key")}</span><strong>{canShow(song.keyConcepts, known) ? song.key : "🔒"}</strong></div>
-      <div><span class="muted small">{t("songs.tempo")}</span><strong>{known.has("t.tempo") ? `${song.tempo} BPM` : "🔒"}</strong></div>
+      <div><span class="muted small">{t("songs.key")}</span><strong>{canShow(song.keyConcepts, known) ? song.key : "—"}</strong></div>
+      <div><span class="muted small">{t("songs.tempo")}</span><strong>{known.has("t.tempo") ? `${song.tempo} BPM` : "—"}</strong></div>
       <div>
         <span class="muted small">{t("songs.timeSig")}</span>
-        <strong>{known.has(timeSigConcept(...(song.timeSig.split("/").map(Number) as [number, number]))) ? song.timeSig : "🔒"}</strong>
+        <strong>{known.has(timeSigConcept(...(song.timeSig.split("/").map(Number) as [number, number]))) ? song.timeSig : "—"}</strong>
       </div>
     </div>
 
@@ -69,7 +69,7 @@
         <div class="row">
           <strong>{sec.section.name}</strong>
           <span class="spacer"></span>
-          {#if sec.available}<span class="pill ok">✓</span>{:else}<span class="pill">🔒 {t("songs.hidden")}</span>{/if}
+          {#if sec.available}<span class="pill ok">✓</span>{:else}<span class="pill">{t("songs.hidden")}</span>{/if}
         </div>
         {#if sec.available}
           {#if sec.section.chords.length}
@@ -82,7 +82,7 @@
             {#if sec.section.roman && known.has("h.roman")}<p class="muted small">{sec.section.roman}</p>{/if}
             <PlayButton seq={sectionAudio(sec.section.chords)} />
           {/if}
-          {#if sec.section.notes}<p>{textAllowed(sec.section.notes, known) ? sec.section.notes : "🔒 " + t("songs.hidden")}</p>{/if}
+          {#if sec.section.notes}<p>{textAllowed(sec.section.notes, known) ? sec.section.notes : t("songs.hidden")}</p>{/if}
         {/if}
       </div>
     {/each}
@@ -97,7 +97,7 @@
               {#if cur.isUnlocked(lid, known)}
                 <button class="btn-small btn-blue" onclick={() => nav.go({ view: "lesson", id: lid })}>{lessonContent(lid)?.title ?? lid}</button>
               {:else}
-                <span class="muted">🔒 {t(`branch.${l.branch}`)} · {t("map.lockedLesson")}</span>
+                <span class="muted">{t(`branch.${l.branch}`)} · {t("map.lockedLesson")}</span>
               {/if}
             </li>
           {/each}
@@ -108,7 +108,7 @@
 
     {#if st.sections.some((s) => s.available)}
       <h2>{t("songs.riff")}</h2>
-      <p>{textAllowed(song.riff, known) ? song.riff : "🔒 " + t("songs.hidden")}</p>
+      <p>{textAllowed(song.riff, known) ? song.riff : t("songs.hidden")}</p>
       {#if song.scales.some((s) => known.has(s.concept))}
         <h3>{t("songs.scales")}</h3>
         <div class="row">{#each song.scales.filter((s) => known.has(s.concept)) as s (s.name)}<span class="pill">{s.name}</span>{/each}</div>
@@ -123,7 +123,7 @@
             <button class="btn-small" onclick={() => nav.go({ view: "lesson", id: th.concept })}>{lessonContent(th.concept)?.title}</button>
             {#if textAllowed(th.why, known)}<span>{th.why}</span>{/if}
           {:else}
-            <span class="muted">🔒 {t("map.lockedLesson")}</span>
+            <span class="muted">{t("map.lockedLesson")}</span>
           {/if}
         </li>
       {/each}

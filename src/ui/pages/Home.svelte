@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Temario: la progresión presentada como el índice de un libro. -->
 <script lang="ts">
   import { BRANCHES, type Branch, type Lesson } from "../../core/curriculum/types";
   import { cur } from "../../state/curriculum";
@@ -7,6 +8,7 @@
   import { lessonContent } from "../../content";
   import { nav } from "../../state/nav.svelte";
   import { t } from "../../i18n";
+  import Icon from "../Icon.svelte";
 
   let { branch = "trunk" }: { branch?: Branch } = $props();
   let selected = $state<Branch>("trunk");
@@ -17,7 +19,7 @@
   const mastered = $derived(new Set(Object.keys(progress.mastered)));
   const lessons = $derived(cur.byBranch.get(selected) ?? []);
   const next = $derived(cur.nextLesson(selected, mastered));
-  const units = $derived.by(() => {
+  const chapters = $derived.by(() => {
     const out: { unit: string; lessons: Lesson[] }[] = [];
     for (const l of lessons) {
       const last = out[out.length - 1];
@@ -30,198 +32,263 @@
   const doneCount = $derived(lessons.filter((l) => mastered.has(l.concept)).length);
   const blockedPath = $derived(next.lesson && next.blockedBy.length ? cur.pathTo(next.blockedBy, mastered) : []);
   const firstBlocked = $derived(blockedPath.find((l) => cur.isUnlocked(l.concept, mastered)));
+  const title = (id: string) => lessonContent(id)?.title ?? id;
 
-  function lessonState(l: Lesson): "done" | "next" | "locked" {
+  function status(l: Lesson): "done" | "next" | "locked" {
     if (mastered.has(l.concept)) return "done";
     if (next.lesson?.id === l.id && next.blockedBy.length === 0) return "next";
     return "locked";
   }
-  function unitVisible(u: { lessons: Lesson[] }) {
-    return u.lessons.some((l) => lessonState(l) !== "locked");
+  function chapterState(c: { lessons: Lesson[] }): "done" | "current" | "future" {
+    if (c.lessons.every((l) => mastered.has(l.concept))) return "done";
+    if (c.lessons.some((l) => status(l) !== "locked") || c.lessons.some((l) => l.id === next.lesson?.id)) return "current";
+    return "future";
   }
+  let open = $state<Record<string, boolean>>({});
 </script>
 
 <div class="page">
-  <div class="stats row">
-    <span class="pill" title={t("progress.streak")}>🔥 {t("progress.days", { n: streak() })}</span>
-    <span class="pill" title={t("progress.weekly")}>🎯 {t("progress.weeklyOf", { done: weeklySessions(), goal: prefs.weeklyGoal })}</span>
-  </div>
+  <p class="eyebrow">{t("home.course")}</p>
+  <h1>{t(`branch.${selected}`)}</h1>
 
-  <div class="card review row">
-    <div class="col grow">
-      <strong>{t("map.review")}</strong>
-      <span class="muted small">{due.length ? t("map.reviewCount", { n: due.length }) : t("map.reviewNone")}</span>
-    </div>
-    <button class="btn-blue" disabled={!due.length} onclick={() => nav.go({ view: "session", mode: "review" })}>{t("common.start")}</button>
-  </div>
-
-  <nav class="tabs" aria-label="Ramas">
+  <nav class="branches" aria-label={t("home.branches")}>
     {#each BRANCHES as b (b)}
-      <button class="tab {selected === b ? 'on' : ''}" style="--c: var(--branch-{b})" onclick={() => (selected = b)} aria-pressed={selected === b}>
-        {t(`branch.${b}`)}
-      </button>
+      <button class="branch {selected === b ? 'on' : ''}" onclick={() => (selected = b)} aria-pressed={selected === b}>{t(`branch.${b}`)}</button>
     {/each}
   </nav>
 
-  <div class="branch-head row">
-    <span class="muted">{doneCount}/{lessons.length}</span>
-    <div class="meter"><div style="width:{(doneCount / Math.max(1, lessons.length)) * 100}%; background: var(--branch-{selected})"></div></div>
-    <button class="btn-small btn-ghost" onclick={() => nav.go({ view: "placement", branch: selected })}>{t("map.placement")}</button>
+  <section class="continue">
+    {#if next.lesson && next.blockedBy.length === 0}
+      <div>
+        <p class="eyebrow">{t("home.continue")}</p>
+        <p class="next-title">{title(next.lesson.id)}</p>
+      </div>
+      <button class="btn-primary" onclick={() => nav.go({ view: "lesson", id: next.lesson!.id })}>{t("common.continue")} <Icon name="arrow" size={18} /></button>
+    {:else if next.lesson}
+      <div>
+        <p class="eyebrow">{t("home.blockedTitle")}</p>
+        <p class="small">{t("map.blocked", { branch: t(`branch.${cur.byConcept.get(next.blockedBy[0])?.branch ?? "trunk"}`) })}</p>
+      </div>
+      {#if firstBlocked}<button class="btn-primary" onclick={() => nav.go({ view: "lesson", id: firstBlocked.id })}>{title(firstBlocked.id)} <Icon name="arrow" size={18} /></button>{/if}
+    {:else}
+      <p>{t("map.done")}</p>
+    {/if}
+  </section>
+
+  <div class="meta small muted">
+    <span>{t("home.progressLine", { done: doneCount, total: lessons.length })}</span>
+    {#if due.length}
+      <button class="btn-ghost btn-small link" onclick={() => nav.go({ view: "session", mode: "review" })}><Icon name="review" size={16} />{t("map.reviewCount", { n: due.length })}</button>
+    {/if}
+    <span>{t("home.streakLine", { days: streak(), done: weeklySessions(), goal: prefs.weeklyGoal })}</span>
+    <button class="btn-ghost btn-small link" onclick={() => nav.go({ view: "placement", branch: selected })}>{t("map.placement")}</button>
   </div>
 
-  {#if next.lesson && next.blockedBy.length}
-    <div class="card blocked">
-      <p>{t("map.blocked", { branch: t(`branch.${cur.byConcept.get(next.blockedBy[0])?.branch ?? "trunk"}`) })}</p>
-      {#if firstBlocked}
-        <button class="btn-blue" onclick={() => nav.go({ view: "lesson", id: firstBlocked.id })}>{lessonContent(firstBlocked.id)?.title ?? firstBlocked.id} →</button>
-        <span class="muted small">{blockedPath.length} lecciones</span>
-      {/if}
-    </div>
-  {:else if !next.lesson}
-    <div class="card"><p>🏆 {t("map.done")}</p></div>
-  {/if}
-
-  {#each units as u (u.unit + u.lessons[0].id)}
-    <section class="unit">
-      <h2 class="unit-title">{unitVisible(u) ? t(`unit.${u.unit}`) : "🔒 " + t(`unit.${u.unit}`)}</h2>
-      {#if unitVisible(u)}
-        <div class="path">
-          {#each u.lessons as l, i (l.id)}
-            {@const st = lessonState(l)}
-            <div class="node-row" style="--offset: {Math.sin(i * 1.1) * 60}px">
-              {#if st === "locked"}
-                <div class="node locked" aria-label={t("map.lockedLesson")}>🔒</div>
-              {:else}
-                <button class="node {st}" style="--c: var(--branch-{selected})" onclick={() => nav.go({ view: "lesson", id: l.id })} aria-label={lessonContent(l.id)?.title ?? l.id}>
-                  {st === "done" ? "✓" : "★"}
-                </button>
-                <span class="node-title {st}">{lessonContent(l.id)?.title ?? l.id}{#if st === "next"} <span class="pill">{i === 0 && doneCount === 0 ? t("map.startHere") : t("map.next")}</span>{/if}</span>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      {/if}
-    </section>
-  {/each}
+  <ol class="toc">
+    {#each chapters as c, ci (c.unit + c.lessons[0].id)}
+      {@const st = chapterState(c)}
+      {@const done = c.lessons.filter((l) => mastered.has(l.concept)).length}
+      {@const expanded = st === "current" || open[c.unit + ci]}
+      <li class="chapter {st}">
+        <button class="chapter-head" disabled={st === "future"} onclick={() => (open[c.unit + ci] = !open[c.unit + ci])} aria-expanded={expanded}>
+          <span class="num">{ci + 1}</span>
+          <span class="ctitle">{t(`unit.${c.unit}`)}</span>
+          <span class="bar" aria-hidden="true"><span style="width:{(done / c.lessons.length) * 100}%"></span></span>
+          <span class="pct">{st === "future" ? t("common.locked") : `${Math.round((done / c.lessons.length) * 100)}%`}</span>
+        </button>
+        {#if expanded && st !== "future"}
+          <ol class="sections">
+            {#each c.lessons as l, li (l.id)}
+              {@const s = status(l)}
+              <li class="section {s}">
+                <span class="snum">{ci + 1}.{li + 1}</span>
+                {#if s === "locked"}
+                  <span class="stitle">{st === "current" ? title(l.id) : t("map.lockedLesson")}</span>
+                  <span class="sstate"><Icon name="lock" size={15} /></span>
+                {:else}
+                  <button class="stitle linkish" onclick={() => nav.go({ view: "lesson", id: l.id })}>{title(l.id)}</button>
+                  <span class="sstate">{#if s === "done"}<Icon name="check" size={16} />{t("home.mastered")}{:else}<strong>{t("home.here")}</strong>{/if}</span>
+                {/if}
+              </li>
+            {/each}
+          </ol>
+        {/if}
+      </li>
+    {/each}
+  </ol>
 </div>
 
 <style>
-  .stats {
-    justify-content: flex-end;
-    margin-bottom: 0.6rem;
-  }
-  .review {
-    margin-bottom: 1rem;
-    border-color: var(--blue);
-  }
-  .grow {
-    flex: 1;
-    gap: 0.1rem;
-  }
-  .tabs {
+  .branches {
     display: flex;
-    gap: 0.4rem;
+    gap: 1.2rem;
     overflow-x: auto;
-    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.4rem;
   }
-  .tab {
+  .branch {
+    border: none;
+    border-radius: 0;
+    background: none;
+    padding: 0.5rem 0;
+    min-height: 40px;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
     flex: 0 0 auto;
-    border-color: var(--border);
-    min-height: 44px;
   }
-  .tab.on {
-    background: var(--c);
-    border-color: color-mix(in srgb, var(--c) 75%, black);
-    color: #fff;
+  .branch.on {
+    color: var(--text);
+    border-bottom-color: var(--accent);
   }
-  .branch-head {
-    margin: 0.8rem 0;
-  }
-  .meter {
-    flex: 1;
-    min-width: 80px;
-    height: 12px;
-    background: var(--border);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .meter div {
-    height: 100%;
-  }
-  .blocked {
-    border-color: var(--orange);
-    margin-bottom: 1rem;
-  }
-  .unit {
-    margin: 1.2rem 0;
-  }
-  .unit-title {
-    font-size: 1.1rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 12px;
-    background: var(--bg2);
-  }
-  .path {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding: 0.6rem 0;
-  }
-  .node-row {
+  .continue {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    transform: translateX(calc(var(--offset) * 0.5));
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--card);
+    border-radius: var(--radius);
   }
-  @media (min-width: 700px) {
-    .node-row {
-      transform: translateX(var(--offset));
-      margin-left: 25%;
-    }
+  .continue p {
+    margin: 0;
   }
-  .node {
-    width: 64px;
-    height: 58px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 1.4rem;
-    flex: 0 0 auto;
+  .next-title {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    margin-top: 0.2rem !important;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    align-items: center;
+    margin: 0.8rem 0 1.8rem;
+  }
+  .link {
     padding: 0;
+    min-height: 0;
+    color: var(--accent);
+    font-weight: 600;
   }
-  .node.done {
-    background: var(--c);
-    border-color: color-mix(in srgb, var(--c) 70%, black);
-    color: #fff;
+  .toc {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--border);
   }
-  .node.next {
-    background: var(--c);
-    border-color: color-mix(in srgb, var(--c) 70%, black);
-    color: #fff;
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 30%, transparent);
-    animation: pulse 1.6s infinite;
+  .chapter {
+    border-bottom: 1px solid var(--border);
   }
-  .node.locked {
+  .chapter-head {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2.2rem 1fr minmax(60px, 140px) 4.5rem;
+    align-items: center;
+    gap: 0.8rem;
+    border: none;
+    border-radius: 0;
+    background: none;
+    padding: 0.9rem 0;
+    text-align: left;
+    min-height: 54px;
+  }
+  .chapter-head:disabled {
+    opacity: 1;
+    cursor: default;
+    color: var(--muted);
+  }
+  .num {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--muted);
+  }
+  .ctitle {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .chapter.future .ctitle {
+    font-weight: 400;
+  }
+  .bar {
+    height: 4px;
     background: var(--border);
-    border: 2px solid var(--border);
-    border-bottom-width: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+  }
+  .pct {
+    text-align: right;
+    font-size: 0.85rem;
     color: var(--muted);
-    font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
   }
-  .node-title.next {
-    font-weight: 900;
+  .sections {
+    list-style: none;
+    padding: 0 0 0.8rem 3rem;
+    margin: 0;
   }
-  .node-title.done {
+  .section {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr auto;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px dotted var(--border);
+  }
+  .section:last-child {
+    border-bottom: none;
+  }
+  .snum {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .section.locked .stitle {
     color: var(--muted);
   }
-  @keyframes pulse {
-    50% {
-      box-shadow: 0 0 0 10px color-mix(in srgb, var(--c) 15%, transparent);
+  .linkish {
+    border: none;
+    background: none;
+    padding: 0;
+    min-height: 0;
+    text-align: left;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .linkish:hover {
+    text-decoration: underline;
+  }
+  .section.next .linkish {
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .sstate {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: inline-flex;
+    gap: 0.3rem;
+    align-items: center;
+  }
+  .section.next .sstate {
+    color: var(--accent);
+  }
+  @media (max-width: 560px) {
+    .chapter-head {
+      grid-template-columns: 1.8rem 1fr 3.8rem;
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .node.next {
-      animation: none;
+    .bar {
+      display: none;
+    }
+    .sections {
+      padding-left: 1rem;
     }
   }
 </style>

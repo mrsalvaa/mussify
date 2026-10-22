@@ -1,12 +1,13 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <script lang="ts">
+  import Icon from "../Icon.svelte";
   import { nav } from "../../state/nav.svelte";
   import { t } from "../../i18n";
   const items = [
-    { view: "metronome", icon: "⏱️", label: "tools.metronome" },
-    { view: "instruments", icon: "🎹", label: "tools.instruments" },
-    { view: "glossary", icon: "📖", label: "tools.glossary" },
-    { view: "journal", icon: "📝", label: "tools.journal" },
+    { view: "metronome", icon: "metronome", label: "tools.metronome" },
+    { view: "instruments", icon: "keys", label: "tools.instruments" },
+    { view: "glossary", icon: "glossary", label: "tools.glossary" },
+    { view: "journal", icon: "journal", label: "tools.journal" },
   ] as const;
 </script>
 
@@ -14,7 +15,7 @@
   <h1>{t("nav.tools")}</h1>
   <div class="grid">
     {#each items as it (it.view)}
-      <button class="tile" onclick={() => nav.go({ view: it.view })}><span class="ti">{it.icon}</span><strong>{t(it.label)}</strong></button>
+      <button class="tile" onclick={() => nav.go({ view: it.view })}><Icon name={it.icon} size={28} /><strong>{t(it.label)}</strong></button>
     {/each}
   </div>
 </div>
@@ -24,11 +25,16 @@
     min-height: 110px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    font-weight: 400;
   }
-  .ti {
-    font-size: 2rem;
+  .tile :global(.icon) {
+    color: var(--accent);
+  }
+  .tile strong {
+    font-family: var(--serif);
+    font-size: 1.15rem;
   }
 </style>

@@ -102,7 +102,7 @@
           <select bind:value={tuningId}>{#each tunings as tt (tt.id)}<option value={tt.id}>{tt.name}</option>{/each}</select>
         </label>
       {/if}
-      <label class="row small"><input type="checkbox" bind:checked={showNames} /> {t("inst.names")}</label>
+      <label class="row small"><input type="checkbox" bind:checked={showNames} />{t("inst.names")}</label>
     </div>
     <p class="muted small">{t("inst.lockedHint")}</p>
   {/if}

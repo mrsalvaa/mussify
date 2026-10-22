@@ -244,7 +244,7 @@
     <div class="row small">
       <button class="btn-small btn-ghost" onclick={() => backend.playerControl({ seek: m.time })}>⏩ {fmt(m.time)}</button>
       <span>{m.name}</span><span class="spacer"></span>
-      <button class="btn-small btn-ghost" onclick={() => { loopA = m.time; loopB = markers[i + 1]?.time ?? duration; setLoop(); }}>🔁</button>
+      <button class="btn-small btn-ghost" onclick={() => { loopA = m.time; loopB = markers[i + 1]?.time ?? duration; setLoop(); }}></button>
       <button class="btn-small btn-ghost" onclick={() => { markers = markers.filter((_, j) => j !== i); void saveMeta({ markers }); draw(); }}>✕</button>
     </div>
   {/each}
@@ -256,14 +256,14 @@
 </div>
 
 <div class="card">
-  <div class="row"><strong>{t("player.analyze")}</strong><span class="spacer"></span><button class="btn-blue btn-small" onclick={analyze} disabled={analyzing || !duration}>{analyzing ? "…" : "🔍"}</button></div>
+  <div class="row"><strong>{t("player.analyze")}</strong><span class="spacer"></span><button class="btn-blue btn-small" onclick={analyze} disabled={analyzing || !duration}>{analyzing ? "…" : ""}</button></div>
   {#if analyzing}<p class="muted">{t("player.analyzing")}</p>{/if}
   {#if analysis}
     <p class="small muted">ℹ️ {t("player.estimate")}</p>
     <div class="facts">
-      <div><span class="muted small">{t("player.tempo")}</span><button class="btn-small btn-ghost" onclick={editTempo}>{showTempo ? `${analysis.tempo} BPM ✎` : "🔒"}</button></div>
-      <div><span class="muted small">{t("player.meter")}</span><strong>{showMeter ? `${analysis.meter}/4` : "🔒"}</strong></div>
-      <div><span class="muted small">{t("player.key")}</span><strong>{showKey ? chordShown(analysis.keyName) : "🔒"}</strong></div>
+      <div><span class="muted small">{t("player.tempo")}</span><button class="btn-small btn-ghost" onclick={editTempo}>{showTempo ? `${analysis.tempo} BPM ✎` : "—"}</button></div>
+      <div><span class="muted small">{t("player.meter")}</span><strong>{showMeter ? `${analysis.meter}/4` : "—"}</strong></div>
+      <div><span class="muted small">{t("player.key")}</span><strong>{showKey ? chordShown(analysis.keyName) : "—"}</strong></div>
     </div>
     <h3>{t("player.sections")}</h3>
     <div class="row">
@@ -273,7 +273,7 @@
       {/each}
     </div>
     <h3>{t("player.chords")}</h3>
-    {#if unknownChordCount}<p class="small muted">⚠️ {t("lib.unknownChords", { n: unknownChordCount })}</p>{/if}
+    {#if unknownChordCount}<p class="small muted">{t("lib.unknownChords", { n: unknownChordCount })}</p>{/if}
     <div class="chords">
       {#each analysis.chords as c, i (i)}
         <button class="chip {pos >= c.start && pos < c.end ? 'now' : ''}" onclick={() => backend.playerControl({ seek: c.start })} ondblclick={() => editChord(i)} title="{fmt(c.start)} · {t('player.edit')}">{chordShown(c.chord)}</button>

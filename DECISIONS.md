@@ -94,3 +94,13 @@ UI en español rioplatense con voseo. Textos de UI en `src/i18n/es-AR.ts`; conte
 ## 16. Fichas de canciones sin material protegido
 
 Solo análisis originales: estructura, progresiones (no protegibles), tonalidad, tempo aproximado, descripción del recurso principal, escalas y teoría vinculada. Sin letras, partituras ni tablaturas. Donde las fuentes no coinciden (p. ej. la tonalidad de *Muchacha ojos de papel*), la ficha lo dice y presenta la progresión por grados, transportada para practicar.
+
+## 17. Rediseño 0.2: temario de libro y estética editorial
+
+**Contexto:** la primera versión copiaba demasiado la interfaz de Duolingo (camino serpenteante de nodos, colores saturados, emojis, felicitaciones).
+
+**Decisión:**
+- La progresión se muestra como el **índice de un libro**: capítulos numerados (las unidades) con su porcentaje de dominio, y temas numerados (2.3, 2.4…). El capítulo actual se despliega y marca "seguir acá"; los dominados se pueden desplegar; los futuros se muestran solo por su nombre, bloqueados. La progresión sigue siendo estrictamente lineal: solo cambia la presentación.
+- **Estética sobria y editorial:** papel claro (o gris cálido oscuro), tinta, un único color de acento (bordó), Source Serif 4 para títulos y Source Sans 3 para texto (ambas OFL), controles finos, íconos lineales propios, sin emojis.
+- **Gamificación discreta:** racha y meta semanal quedan como una línea de texto; el feedback dice "Correcto"/"Incorrecto".
+- **Lecciones integradas:** la explicación incluye ejercicios "Probalo" intercalados después de los ejemplos (no cuentan para dominar), y al final una práctica para dominar el tema.

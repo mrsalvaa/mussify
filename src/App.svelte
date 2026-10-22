@@ -24,6 +24,7 @@
   import Journal from "./ui/pages/Journal.svelte";
   import ProgressPage from "./ui/pages/ProgressPage.svelte";
   import Settings from "./ui/pages/Settings.svelte";
+  import Icon from "./ui/Icon.svelte";
 
   let ready = $state(false);
   onMount(async () => {
@@ -42,11 +43,11 @@
   const r = $derived(nav.route);
   const fullscreen = $derived(r.view === "lesson" || r.view === "session" || r.view === "placement" || r.view === "sight");
   const tabs = [
-    { view: "home", icon: "🏠", label: "nav.learn" },
-    { view: "practice", icon: "🎯", label: "nav.practice" },
-    { view: "songs", icon: "🎸", label: "nav.songs" },
-    { view: "library", icon: "📚", label: "nav.library" },
-    { view: "tools", icon: "🧰", label: "nav.tools" },
+    { view: "home", icon: "book", label: "nav.learn" },
+    { view: "practice", icon: "practice", label: "nav.practice" },
+    { view: "songs", icon: "songs", label: "nav.songs" },
+    { view: "library", icon: "library", label: "nav.library" },
+    { view: "tools", icon: "tools", label: "nav.tools" },
   ] as const;
   const activeTab = $derived(
     r.view === "song" ? "songs" : r.view === "item" || r.view === "download" ? "library" : ["metronome", "instruments", "glossary", "journal"].includes(r.view) ? "tools" : r.view,
@@ -58,10 +59,10 @@
 {:else}
   {#if !fullscreen}
     <header class="topbar">
-      <button class="logo btn-ghost" onclick={() => nav.reset({ view: "home" })}>🎵 <span>{t("app.name")}</span></button>
+      <button class="logo btn-ghost" onclick={() => nav.reset({ view: "home" })}>{t("app.name")}</button>
       <span class="spacer"></span>
-      <button class="btn-ghost icon" onclick={() => nav.go({ view: "progress" })} aria-label={t("nav.progress")} title={t("nav.progress")}>📈</button>
-      <button class="btn-ghost icon" onclick={() => nav.go({ view: "settings" })} aria-label={t("nav.settings")} title={t("nav.settings")}>⚙️</button>
+      <button class="btn-ghost icon" onclick={() => nav.go({ view: "progress" })} aria-label={t("nav.progress")} title={t("nav.progress")}><Icon name="progress" /></button>
+      <button class="btn-ghost icon" onclick={() => nav.go({ view: "settings" })} aria-label={t("nav.settings")} title={t("nav.settings")}><Icon name="settings" /></button>
     </header>
   {/if}
   <main class={fullscreen ? "full" : ""}>
@@ -108,7 +109,7 @@
     <nav class="bottombar" aria-label="Secciones">
       {#each tabs as tb (tb.view)}
         <button class="navbtn {activeTab === tb.view ? 'on' : ''}" onclick={() => nav.reset({ view: tb.view })} aria-current={activeTab === tb.view ? "page" : undefined}>
-          <span class="nico" aria-hidden="true">{tb.icon}</span>
+          <span class="nico"><Icon name={tb.icon} size={22} /></span>
           <span class="nlabel">{t(tb.label)}</span>
         </button>
       {/each}
@@ -121,6 +122,7 @@
     display: grid;
     place-items: center;
     height: 100vh;
+    font-family: var(--serif);
     font-size: 1.3rem;
   }
   .topbar {
@@ -129,21 +131,25 @@
     z-index: 20;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.4rem 0.8rem;
-    padding-top: max(0.4rem, env(safe-area-inset-top));
+    gap: 0.2rem;
+    padding: 0.35rem 1rem;
+    padding-top: max(0.35rem, env(safe-area-inset-top));
     background: var(--bg);
-    border-bottom: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
   .logo {
-    font-size: 1.25rem;
-    font-weight: 900;
-    color: var(--green);
-    padding-left: 0.2rem;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding-left: 0;
+  }
+  .logo:hover {
+    text-decoration: none !important;
   }
   .icon {
-    font-size: 1.3rem;
-    padding: 0.2em 0.5em;
+    padding: 0.3em 0.5em;
+    color: var(--muted);
   }
   main.full {
     padding-top: max(0.5rem, env(safe-area-inset-top));
@@ -156,49 +162,58 @@
     z-index: 20;
     display: flex;
     justify-content: center;
-    gap: 0.2rem;
     background: var(--bg);
-    border-top: 2px solid var(--border);
-    padding: 0.3rem 0.3rem max(0.3rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    padding: 0.2rem 0.2rem max(0.2rem, env(safe-area-inset-bottom));
   }
   .navbtn {
     flex: 1;
-    max-width: 150px;
+    max-width: 140px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.1rem;
-    border: 2px solid transparent;
+    gap: 0.15rem;
+    border: none;
+    border-radius: 0;
     background: transparent;
-    padding: 0.3rem;
-    min-height: 56px;
-    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 0.35rem 0.2rem;
+    min-height: 54px;
+    font-size: 0.76rem;
+    font-weight: 600;
   }
   .navbtn.on {
-    border-color: var(--blue);
-    background: color-mix(in srgb, var(--blue) 12%, var(--bg));
-    color: var(--blue);
-  }
-  .nico {
-    font-size: 1.35rem;
+    color: var(--accent);
   }
   @media (min-width: 900px) {
     .bottombar {
-      top: 64px;
+      top: 56px;
       bottom: 0;
       right: auto;
-      width: 110px;
+      width: 190px;
       flex-direction: column;
       justify-content: flex-start;
       border-top: none;
-      border-right: 2px solid var(--border);
-      padding-top: 1rem;
+      border-right: 1px solid var(--border);
+      padding: 1.2rem 0.6rem;
+      gap: 0.1rem;
     }
     .navbtn {
       flex: 0 0 auto;
+      max-width: none;
+      flex-direction: row;
+      gap: 0.7rem;
+      min-height: 40px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.98rem;
+      border-left: 2px solid transparent;
+    }
+    .navbtn.on {
+      border-left-color: var(--accent);
+      color: var(--text);
     }
     main:not(.full) {
-      margin-left: 110px;
+      margin-left: 190px;
     }
   }
 </style>

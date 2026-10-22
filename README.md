@@ -6,7 +6,7 @@ Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. 
 
 ## Qué tiene
 
-- **Camino de aprendizaje estilo Duolingo** con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
+- **Temario en forma de libro** (capítulos y temas numerados, con su porcentaje de dominio) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
 - **Progresión estrictamente lineal**: cada lección enseña **un** concepto; nada aparece antes de aprenderse (ni notas, ni figuras, ni acordes, ni términos en los textos). Esto se verifica con tests sobre cada lección y con una auditoría que corre en la app antes de cada ejercicio.
 - **Ejercicios generados al azar** (con semilla) que ponderan lo que más fallás: lectura de notas, ubicar en el teclado o el diapasón, intervalos, acordes, escalas, armaduras, grados y funciones, progresiones de oído, dictado melódico y rítmico, tablatura, diagramas de acordes, grooves de batería, y más.
 - **Repaso espaciado** (SM-2) y práctica de "lo que más fallás".
@@ -19,7 +19,7 @@ Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. 
 - **Análisis local de audio**: tempo, compás aproximado, tonalidad, acordes y secciones, todo en tu dispositivo; corregible a mano.
 - **Buscar y descargar audio con yt-dlp** (Linux), solo si lo pedís, con confirmación, con el interruptor de red y quedando en el registro.
 - **12 fichas de canciones** con análisis originales (estructura, progresiones, tonalidad, recurso principal, teoría vinculada): *Let It Be*, *Bohemian Rhapsody*, *Muchacha ojos de papel*, *Smoke on the Water*, *De música ligera*, *Wish You Were Here*, *Another One Bites the Dust*, *Come Together*, *Money*, *We Will Rock You*, *Back in Black*, *Rock and Roll*. Se habilitan por partes a medida que aprendés lo necesario.
-- **Progreso sobrio**: racha, meta semanal, precisión por tipo de ejercicio, historial, "qué fallás más" y diario de práctica. Sin vidas, ligas ni monedas.
+- **Progreso discreto**: racha, meta semanal, precisión por tipo de ejercicio, historial, "qué fallás más" y diario de práctica. Sin vidas, ligas ni monedas.
 - **Ajustes**: Do Re Mi / C D E / ambos, tema claro/oscuro, tamaño de interfaz, alto contraste, paleta para daltonismo, afinación de referencia (La4 = 440 Hz por defecto), red, respaldo cifrado, espacio usado.
 - Interfaz en **español rioplatense**, con todos los textos externalizados.
 

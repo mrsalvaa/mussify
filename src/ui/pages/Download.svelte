@@ -51,26 +51,26 @@
 <div class="page">
   <button class="btn-ghost" onclick={() => nav.back()}>← {t("common.back")}</button>
   <h1>{t("dl.title")}</h1>
-  <p class="muted small">⚠️ {t("lib.disclaimer")}</p>
+  <p class="muted small">{t("lib.disclaimer")}</p>
   {#if tools && !tools.supported}
     <div class="card warn"><p>{tools.reason}</p><p>{t("dl.androidAlt")}</p></div>
   {:else if !allowed}
     <div class="card warn">
       <p>{t("dl.netOff")}</p>
-      <button onclick={() => nav.go({ view: "settings" })}>⚙️ {t("nav.settings")}</button>
+      <button onclick={() => nav.go({ view: "settings" })}>{t("nav.settings")}</button>
     </div>
   {:else}
     {#if tools && !tools.ytdlp}<div class="card warn"><p>{t("dl.noYtdlp")}</p></div>{/if}
     <form class="row" onsubmit={(e) => { e.preventDefault(); if (query.trim()) confirmSearch = true; }}>
       <input type="search" class="grow" bind:value={query} placeholder={t("dl.query")} aria-label={t("dl.query")} />
-      <button class="btn-blue" type="submit" disabled={busy || !query.trim()}>🔎</button>
+      <button class="btn-blue" type="submit" disabled={busy || !query.trim()}></button>
     </form>
     {#if msg}<p>{msg}</p>{/if}
     <div class="list">
       {#each results as r (r.id)}
         <div class="card row">
           <div class="col grow left"><strong>{r.title}</strong><span class="muted small">{r.channel} · {fmt(r.duration)}</span></div>
-          <button class="btn-primary btn-small" disabled={busy} onclick={() => (confirmItem = r)}>⬇️</button>
+          <button class="btn-primary btn-small" disabled={busy} onclick={() => (confirmItem = r)}>{t("dl.download")}</button>
         </div>
       {/each}
     </div>

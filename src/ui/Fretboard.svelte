@@ -128,7 +128,7 @@
   }
   .fnum,
   .sname {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 11px;
     font-weight: 800;
     fill: var(--muted);
@@ -160,14 +160,14 @@
     fill: var(--bad);
   }
   .mtext {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 12px;
     font-weight: 900;
     fill: #fff;
     pointer-events: none;
   }
   .ghost {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 10px;
     fill: rgba(255, 255, 255, 0.85);
     pointer-events: none;

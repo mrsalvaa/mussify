@@ -20,8 +20,10 @@
     exercise: Exercise;
     known?: ReadonlySet<string>;
     ondone: (correct: boolean) => void;
+    /** Dentro del texto de una lección: respuesta y resultado en línea, sin atajos globales. */
+    inline?: boolean;
   }
-  let { exercise, known, ondone }: Props = $props();
+  let { exercise, known, ondone, inline = false }: Props = $props();
 
   let result = $state<null | boolean>(null);
   let picked = $state<number | null>(null);
@@ -38,6 +40,7 @@
     if (result !== null) return;
     const ok = checkAnswer(a, r);
     result = ok;
+    if (inline) ondone(ok);
     praise = ok ? tPick("fb.great") : t("fb.wrong");
   }
 
@@ -150,7 +153,7 @@
   const isVisualChoice = $derived(a.kind === "choice" && a.options.some((o) => o.kind === "score" || o.kind === "diagram" || o.kind === "audio"));
 </script>
 
-<div class="ex fade-in">
+<div class="ex fade-in {inline ? 'inline' : ''}">
   <h2 class="prompt">{formatMsg(p.text)}</h2>
 
   <div class="stage">
@@ -236,20 +239,20 @@
   </div>
 
   {#if result !== null}
-    <div class="feedback {result ? 'good pop' : 'bad shake'}" role="status" aria-live="assertive">
+    <div class="feedback {result ? 'good' : 'bad'} {inline ? 'in' : ''}" role="status" aria-live="assertive">
       <div class="fb-text">
-        <strong>{result ? "✓ " : "✗ "}{praise}</strong>
+        <strong>{praise}</strong>
         {#if !result}<div>{t("fb.answer")} <b>{correctText}</b></div>{/if}
         {#if exercise.explain}<div class="small">{formatMsg(exercise.explain)}</div>{/if}
       </div>
-      <button class={result ? "btn-primary" : "btn-danger"} onclick={() => ondone(!!result)}>{t("common.continue")}</button>
+      {#if !inline}<button class="btn-primary" onclick={() => ondone(!!result)}>{t("common.continue")}</button>{/if}
     </div>
   {/if}
 </div>
 
 <svelte:window
   onkeydown={(e) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (inline || e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     if (result !== null && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       ondone(!!result);
@@ -269,9 +272,18 @@
     gap: 1rem;
     padding-bottom: 7rem;
   }
+  .ex.inline {
+    padding-bottom: 0;
+    gap: 0.8rem;
+  }
   .prompt {
     text-align: center;
     font-size: 1.35rem;
+  }
+  .inline .prompt {
+    text-align: left;
+    font-size: 1.1rem;
+    margin: 0;
   }
   .stage {
     display: flex;
@@ -284,46 +296,45 @@
     max-width: 680px;
   }
   .big {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+    font-family: var(--serif);
   }
   .options {
     display: grid;
-    gap: 0.6rem;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
   .options.visual {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
   .opt {
     position: relative;
-    min-height: 60px;
+    min-height: 54px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     font-size: 1.05rem;
+    font-weight: 400;
   }
   .opt .num {
     position: absolute;
     left: 8px;
-    top: 6px;
+    top: 5px;
     font-size: 0.7rem;
     color: var(--muted);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    padding: 0 4px;
   }
   .opt.ok {
     border-color: var(--ok);
-    background: color-mix(in srgb, var(--ok) 15%, var(--card));
+    background: var(--ok-soft);
   }
   .opt.bad {
     border-color: var(--bad);
-    background: color-mix(in srgb, var(--bad) 15%, var(--card));
+    background: var(--bad-soft);
   }
   .opt .mark {
-    font-weight: 900;
-    font-size: 1.3rem;
+    font-weight: 600;
+    font-size: 1.1rem;
   }
   .center {
     justify-content: center;
@@ -335,12 +346,12 @@
     flex-wrap: wrap;
   }
   .slot {
-    min-width: 56px;
+    min-width: 52px;
     text-align: center;
-    padding: 0.5rem;
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    font-size: 1.1rem;
+    padding: 0.45rem;
+    border: 1px dashed var(--rule);
+    border-radius: var(--radius);
+    font-size: 1.05rem;
   }
   .slot.filled {
     border-style: solid;
@@ -354,7 +365,8 @@
     color: var(--bad);
   }
   .name-btn {
-    min-width: 64px;
+    min-width: 60px;
+    font-weight: 400;
   }
   .built {
     min-height: 90px;
@@ -364,30 +376,41 @@
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 1rem max(1rem, calc((100vw - 900px) / 2));
+    padding: 0.9rem max(1.2rem, calc((100vw - 820px) / 2));
     display: flex;
     gap: 1rem;
     align-items: center;
     justify-content: space-between;
     z-index: 30;
-    border-top: 2px solid var(--border);
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+  .feedback.in {
+    position: static;
+    padding: 0.6rem 0.8rem;
+    border: none;
+    border-left: 3px solid;
+    border-radius: 0;
   }
   .feedback.good {
-    background: color-mix(in srgb, var(--ok) 18%, var(--bg));
-    color: var(--ok-dark);
+    border-top-color: var(--ok);
+    border-left-color: var(--ok);
+    background: var(--ok-soft);
   }
   .feedback.bad {
-    background: color-mix(in srgb, var(--bad) 18%, var(--bg));
-    color: var(--bad-dark);
+    border-top-color: var(--bad);
+    border-left-color: var(--bad);
+    background: var(--bad-soft);
   }
-  :global([data-theme="dark"]) .feedback.good,
-  :global([data-theme="dark"]) .feedback.bad {
-    color: var(--text);
+  .feedback.good strong {
+    color: var(--ok);
+  }
+  .feedback.bad strong {
+    color: var(--bad);
   }
   .fb-text {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-    font-size: 1.05rem;
   }
 </style>

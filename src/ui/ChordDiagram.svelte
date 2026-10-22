@@ -79,13 +79,13 @@
     font-weight: 900;
   }
   .finger {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 10px;
     font-weight: 900;
     fill: #fff;
   }
   .basefret {
-    font-family: "Nunito";
+    font-family: var(--sans);
     font-size: 11px;
     font-weight: 900;
     fill: var(--ink);

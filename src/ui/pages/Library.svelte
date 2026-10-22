@@ -45,19 +45,19 @@
     await backend.libraryDelete(it.id);
     await refresh();
   }
-  const icon = (k: string) => (k === "audio" ? "🎧" : k === "texttab" ? "🎸" : k === "guitarpro" ? "🎸" : "🎼");
+  const icon = (k: string) => (k === "audio" ? "" : k === "texttab" ? "" : k === "guitarpro" ? "" : "");
 </script>
 
 <div class="page">
   <h1>{t("lib.title")}</h1>
   <div class="row">
-    <button class="btn-primary" onclick={() => input.click()} disabled={busy}>⬆️ {t("lib.import")}</button>
-    <button class="btn-blue" onclick={() => nav.go({ view: "download" })}>🔎 {t("lib.search")}</button>
+    <button class="btn-primary" onclick={() => input.click()} disabled={busy}>{t("lib.import")}</button>
+    <button class="btn-blue" onclick={() => nav.go({ view: "download" })}>{t("lib.search")}</button>
     <input bind:this={input} type="file" multiple class="sr-only" onchange={onFiles}
       accept=".mid,.midi,.kar,.xml,.musicxml,.mxl,.gp,.gp3,.gp4,.gp5,.gpx,.gp7,.txt,.tab,.crd,.mp3,.ogg,.oga,.flac,.wav,.m4a,audio/*" />
   </div>
   <p class="muted small">{t("lib.importHint")}</p>
-  <p class="muted small">⚠️ {t("lib.disclaimer")}</p>
+  <p class="muted small">{t("lib.disclaimer")}</p>
   {#if error}<p class="err">{error}</p>{/if}
   {#if busy}<p>{t("common.loading")}</p>{/if}
   {#if !items.length}
@@ -73,7 +73,7 @@
               <span class="muted small">{it.kind} · {(it.size / 1024 / 1024).toFixed(2)} MB {it.meta?.pending ? "· ⏳" : ""}</span>
             </span>
           </button>
-          <button class="btn-small btn-ghost" onclick={() => del(it)} aria-label={t("common.delete")}>🗑️</button>
+          <button class="btn-small btn-ghost" onclick={() => del(it)} aria-label={t("common.delete")}></button>
         </div>
       {/each}
     </div>

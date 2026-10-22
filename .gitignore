@@ -23,3 +23,4 @@ src-tauri/gen/android/app/src/main/java/org/mussify/app/generated/
 src-tauri/gen/android/tauri.settings.gradle
 src-tauri/gen/android/app/tauri.build.gradle.kts
 src-tauri/gen/android/.kotlin/
+/release-out/

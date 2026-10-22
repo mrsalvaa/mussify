@@ -241,6 +241,7 @@ export const ES_AR: Record<string, string> = {
   "aria.fretboardGuitar": "Diapasón de guitarra",
   "netlog.search": "Búsqueda: {q}",
   "netlog.download": "Descarga de audio: {q}",
+  "netlog.thumbs": "Miniaturas de {q} resultados de búsqueda",
   "err.download": "La descarga falló: {detail}",
 
   // ---------------- Interfaz ----------------
@@ -426,9 +427,12 @@ export const ES_AR: Record<string, string> = {
   "dl.title": "Buscar y descargar audio",
   "dl.netOff": "Las conexiones de red están apagadas. Para buscar, activalas en Ajustes → Red.",
   "dl.query": "Nombre de la canción",
+  "dl.search": "Buscar",
+  "dl.searching": "Buscando…",
+  "dl.noResults": "Sin resultados.",
   "dl.confirmTitle": "Confirmá la descarga",
   "dl.confirmBody": "Mussify va a ejecutar yt-dlp para descargar SOLO el audio de:\n\n{title}\n{url}\n\ndesde youtube.com. Se guardará en tu biblioteca local y quedará anotado en el registro de red.",
-  "dl.confirmSearch": "Mussify va a ejecutar yt-dlp para buscar \"{query}\" en youtube.com. Se anotará en el registro de red.",
+  "dl.confirmSearch": "Mussify va a ejecutar yt-dlp para buscar \"{query}\" en youtube.com y después va a traer las miniaturas de los resultados desde i.ytimg.com. Las dos cosas se anotan en el registro de red.",
   "dl.downloading": "Descargando…",
   "dl.download": "Descargar",
   "dl.done": "Listo: se agregó a tu biblioteca.",

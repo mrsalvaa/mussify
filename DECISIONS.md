@@ -118,3 +118,10 @@ Solo análisis originales: estructura, progresiones (no protegibles), tonalidad,
 - Cambiar de idioma recarga la app: es más simple y seguro que re-renderizar todo el contenido cargado en memoria.
 - Las preferencias guardadas por versiones anteriores (sin `prefsVersion`) pasan una vez a inglés con nombres C D E.
 
+## 20. Miniaturas de la búsqueda (0.4.2)
+
+- La CSP de la interfaz no permite conexiones, y así se queda: las miniaturas las descarga el backend y llegan como `data:` URLs.
+- Cliente HTTP: `ureq` 2 con rustls (Rust puro, MIT/Apache), solo en escritorio (`cfg(not(target_os = "android"))`), porque en Android no hay búsqueda.
+- No se usa la URL de miniatura que devuelve yt-dlp: se arma `https://i.ytimg.com/vi/<id>/mqdefault.jpg` con el id validado (solo `[A-Za-z0-9_-]`), sin redirecciones, con 10 s de tiempo máximo y 256 KB por imagen. Así un resultado manipulado no puede hacer que la app se conecte a otro lado.
+- Un comando aparte (`yt_thumbs`) en lugar de incluirlas en `yt_search`, para que la lista aparezca sin esperar las imágenes. Se registra una entrada por búsqueda (`thumbs|N`).
+

@@ -15,5 +15,5 @@
   <launchable type="desktop-id">org.mussify.app.desktop</launchable>
   <content_rating type="oars-1.1"/>
   <categories><category>Education</category><category>Music</category></categories>
-  <releases><release version="0.4.1" date="2026-10-22"/><release version="0.4.0" date="2026-10-22"/><release version="0.1.0" date="2026-10-22"/></releases>
+  <releases><release version="0.4.2" date="2026-10-22"/><release version="0.4.1" date="2026-10-22"/><release version="0.4.0" date="2026-10-22"/><release version="0.1.0" date="2026-10-22"/></releases>
 </component>

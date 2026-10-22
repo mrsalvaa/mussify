@@ -4,6 +4,7 @@
   import { backend, type SearchResult, type ToolInfo } from "../../platform/bridge";
   import { nav } from "../../state/nav.svelte";
   import { t, localizeError } from "../../i18n";
+  import Icon from "../Icon.svelte";
 
   let allowed = $state(false);
   let tools = $state<ToolInfo | null>(null);
@@ -13,6 +14,8 @@
   let msg = $state("");
   let confirmItem = $state<SearchResult | null>(null);
   let confirmSearch = $state(false);
+  /** Miniaturas por id; se completan después de mostrar los resultados. */
+  let thumbs = $state<Record<string, string>>({});
 
   onMount(async () => {
     allowed = await backend.netSettings();
@@ -22,13 +25,30 @@
   async function doSearch() {
     confirmSearch = false;
     busy = true;
-    msg = "";
+    msg = t("dl.searching");
     try {
       results = await backend.ytSearch(query);
+      msg = results.length ? "" : t("dl.noResults");
+      thumbs = {};
+      void loadThumbs(results);
     } catch (e) {
       msg = localizeError(e);
     } finally {
       busy = false;
+    }
+  }
+  async function loadThumbs(list: SearchResult[]) {
+    try {
+      const got = await backend.ytThumbs(list.map((r) => r.id));
+      if (list !== results) return; // llegó otra búsqueda mientras tanto
+      const next: Record<string, string> = {};
+      list.forEach((r, i) => {
+        const g = got[i];
+        if (g) next[r.id] = g;
+      });
+      thumbs = next;
+    } catch {
+      /* sin miniaturas: la lista sigue sirviendo */
     }
   }
   async function doDownload(r: SearchResult) {
@@ -63,12 +83,13 @@
     {#if tools && !tools.ytdlp}<div class="card warn"><p>{t("dl.noYtdlp")}</p></div>{/if}
     <form class="row" onsubmit={(e) => { e.preventDefault(); if (query.trim()) confirmSearch = true; }}>
       <input type="search" class="grow" bind:value={query} placeholder={t("dl.query")} aria-label={t("dl.query")} />
-      <button class="btn-blue" type="submit" disabled={busy || !query.trim()}></button>
+      <button class="btn-blue" type="submit" disabled={busy || !query.trim()}><Icon name="search" size={18} /> {t("dl.search")}</button>
     </form>
     {#if msg}<p>{msg}</p>{/if}
     <div class="list">
       {#each results as r (r.id)}
-        <div class="card row">
+        <div class="card row result">
+          <div class="thumb" aria-hidden="true">{#if thumbs[r.id]}<img src={thumbs[r.id]} alt="" />{/if}</div>
           <div class="col grow left"><strong>{r.title}</strong><span class="muted small">{r.channel} · {fmt(r.duration)}</span></div>
           <button class="btn-primary btn-small" disabled={busy} onclick={() => (confirmItem = r)}>{t("dl.download")}</button>
         </div>
@@ -107,6 +128,30 @@
   .left {
     align-items: flex-start;
     gap: 0;
+  }
+  .result {
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .thumb {
+    flex: none;
+    width: 128px;
+    aspect-ratio: 16 / 9;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 480px) {
+    .thumb {
+      width: 96px;
+    }
   }
   .list {
     display: flex;

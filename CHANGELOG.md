@@ -2,6 +2,14 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.4.2] - 2026-10-22
+
+### Agregado
+- **Miniaturas en la búsqueda de canciones**: cada resultado muestra la miniatura del video. Primero aparece la lista y las miniaturas se completan enseguida. Las trae el backend desde `i.ytimg.com` (con la dirección armada solo a partir del id del video, con límite de tamaño y de tiempo) y se las pasa a la interfaz como datos, así que la interfaz sigue sin poder conectarse a nada. Respetan el interruptor de red y quedan en el registro de conexiones; el diálogo de confirmación lo avisa.
+
+### Corregido
+- El botón de buscar de "Buscar y descargar audio" estaba vacío; ahora dice "Buscar" con su ícono. También se muestra "Buscando…" y "Sin resultados".
+
 ## [0.4.1] - 2026-10-22
 
 ### Corregido

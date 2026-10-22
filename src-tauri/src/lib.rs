@@ -338,6 +338,12 @@ async fn yt_search(state: State<'_, AppState>, query: String) -> Res<Vec<net::Se
 }
 
 #[tauri::command]
+async fn yt_thumbs(state: State<'_, AppState>, ids: Vec<String>) -> Res<Vec<Option<String>>> {
+    let db = state.db.clone();
+    tauri::async_runtime::spawn_blocking(move || net::thumbnails(&db, &ids)).await.map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
 async fn yt_download(state: State<'_, AppState>, id: String, title: String) -> Res<LibraryItem> {
     let db = state.db.clone();
     tauri::async_runtime::spawn_blocking(move || -> Res<LibraryItem> {
@@ -381,7 +387,7 @@ pub fn run() {
             player_load, player_control, analyze_audio,
             kv_get, kv_set, library_add, library_list, library_read, library_update, library_delete, storage_info,
             backup_export, backup_import, reset_progress,
-            net_settings, net_log, tools_info, yt_search, yt_download, platform
+            net_settings, net_log, tools_info, yt_search, yt_thumbs, yt_download, platform
         ])
         .run(tauri::generate_context!())
         .expect("error al iniciar Mussify");

@@ -171,7 +171,7 @@
   </section>
 
   <h2>{t("settings.about")}</h2>
-  <section class="card"><p>{t("settings.aboutText")}</p><p class="small muted">Mussify 0.4.1 · GPL-3.0-or-later</p></section>
+  <section class="card"><p>{t("settings.aboutText")}</p><p class="small muted">Mussify 0.4.2 · GPL-3.0-or-later</p></section>
 </div>
 
 <style>

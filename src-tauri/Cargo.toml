@@ -27,3 +27,7 @@ argon2 = "0.5"
 getrandom = "0.2"
 base64 = "0.22"
 log = "0.4"
+
+# Cliente HTTP para las miniaturas de la búsqueda (solo escritorio: en Android no hay búsqueda).
+[target.'cfg(not(target_os = "android"))'.dependencies]
+ureq = { version = "2", default-features = false, features = ["tls"] }

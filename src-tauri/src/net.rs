@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! Única parte de la app que usa la red: buscar y descargar audio con yt-dlp (herramienta FOSS),
-//! siempre a pedido explícito del usuario, respetando el interruptor general y dejando registro.
+//! Única parte de la app que usa la red: buscar y descargar audio con yt-dlp (herramienta FOSS)
+//! y traer las miniaturas de los resultados de búsqueda, siempre a pedido explícito del usuario,
+//! respetando el interruptor general y dejando registro.
 
 use crate::db::Db;
 use serde::{Deserialize, Serialize};
@@ -154,9 +155,59 @@ pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
     Ok(res)
 }
 
+fn valid_id(id: &str) -> bool {
+    !id.is_empty() && id.len() <= 32 && id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
+/// Tamaño máximo aceptado por miniatura (las de 320×180 pesan ~10–30 KB).
+const THUMB_MAX: u64 = 256 * 1024;
+
+/// Miniaturas de los resultados de búsqueda como `data:image/jpeg;base64,…` (la interfaz no tiene red).
+/// La URL se arma solo a partir del id validado, siempre en i.ytimg.com. Las que fallan quedan en `None`.
+#[cfg(not(target_os = "android"))]
+pub fn thumbnails(db: &Db, ids: &[String]) -> Result<Vec<Option<String>>, String> {
+    use base64::Engine as _;
+    use std::io::Read;
+    if !db.network_allowed() {
+        return Err("E_NET_DISABLED".into());
+    }
+    let ids: Vec<String> = ids.iter().take(20).cloned().collect();
+    if ids.iter().any(|id| !valid_id(id)) {
+        return Err("E_BAD_ID".into());
+    }
+    let agent = ureq::AgentBuilder::new().timeout(std::time::Duration::from_secs(10)).redirects(0).build();
+    let handles: Vec<_> = ids
+        .iter()
+        .map(|id| {
+            let agent = agent.clone();
+            let url = format!("https://i.ytimg.com/vi/{id}/mqdefault.jpg");
+            std::thread::spawn(move || -> Option<String> {
+                let resp = agent.get(&url).call().ok()?;
+                if !resp.content_type().starts_with("image/") {
+                    return None;
+                }
+                let mut buf = Vec::new();
+                resp.into_reader().take(THUMB_MAX + 1).read_to_end(&mut buf).ok()?;
+                if buf.is_empty() || buf.len() as u64 > THUMB_MAX {
+                    return None;
+                }
+                Some(format!("data:image/jpeg;base64,{}", base64::engine::general_purpose::STANDARD.encode(&buf)))
+            })
+        })
+        .collect();
+    let out: Vec<Option<String>> = handles.into_iter().map(|h| h.join().ok().flatten()).collect();
+    db.net_log("i.ytimg.com", &format!("thumbs|{}", ids.len()), out.iter().any(Option::is_some));
+    Ok(out)
+}
+
+#[cfg(target_os = "android")]
+pub fn thumbnails(_db: &Db, _ids: &[String]) -> Result<Vec<Option<String>>, String> {
+    Err("E_ANDROID".into())
+}
+
 /// Descarga solo el audio a la carpeta de la biblioteca. Devuelve la ruta del archivo.
 pub fn download(db: &Db, id: &str, title: &str, dir: &Path) -> Result<PathBuf, String> {
-    if !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+    if !valid_id(id) {
         return Err("E_BAD_ID".into());
     }
     let bin = guard(db, "descarga")?;
@@ -206,6 +257,15 @@ mod tests {
         let removed: Vec<_> = cmd.get_envs().filter(|(_, v)| v.is_none()).map(|(k, _)| k.to_string_lossy().to_string()).collect();
         assert!(removed.contains(&"PYTHONHOME".to_string()));
         assert!(removed.contains(&"LD_LIBRARY_PATH".to_string()));
+    }
+
+    #[test]
+    fn validates_video_ids() {
+        assert!(valid_id("dQw4w9WgXcQ"));
+        assert!(!valid_id(""));
+        assert!(!valid_id("../etc/passwd"));
+        assert!(!valid_id("abc?x=1"));
+        assert!(!valid_id("a/b"));
     }
 
     #[test]

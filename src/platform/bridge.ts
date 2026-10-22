@@ -285,6 +285,11 @@ export const backend = {
   async ytSearch(query: string): Promise<SearchResult[]> {
     return invoke<SearchResult[]>("yt_search", { query });
   },
+  /** Miniaturas de los resultados (data URLs, o null si no se pudo traer alguna). */
+  async ytThumbs(ids: string[]): Promise<(string | null)[]> {
+    if (!isTauri) return ids.map(() => null);
+    return invoke<(string | null)[]>("yt_thumbs", { ids });
+  },
   async ytDownload(id: string, title: string): Promise<LibraryItem> {
     return invoke<LibraryItem>("yt_download", { id, title });
   },

@@ -4,6 +4,20 @@
 
 Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. **Sin cuentas, sin nube, sin telemetría.** Licencia GPL-3.0-or-later.
 
+## Capturas
+
+| Temario | Lección con ejercicio intercalado |
+|---|---|
+| ![Temario](docs/screenshots/temario.png) | ![Lección](docs/screenshots/leccion.png) |
+
+| Ejercicio | Ficha de canción |
+|---|---|
+| ![Ejercicio](docs/screenshots/ejercicio.png) | ![Canción](docs/screenshots/cancion.png) |
+
+| Instrumentos | Modo oscuro | Celular |
+|---|---|---|
+| ![Instrumentos](docs/screenshots/instrumentos.png) | ![Oscuro](docs/screenshots/oscuro.png) | ![Celular](docs/screenshots/movil.png) |
+
 ## Qué tiene
 
 - **Temario en forma de libro** (capítulos y temas numerados, con su porcentaje de dominio) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).

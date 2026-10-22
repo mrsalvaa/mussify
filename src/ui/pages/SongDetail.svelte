@@ -163,17 +163,16 @@
     margin: 0.6rem 0;
   }
   .chip {
-    font-weight: 900;
+    font-family: var(--serif);
+    font-weight: 600;
     font-size: 1.1rem;
-    padding: 0.2em 0.6em;
-    border-radius: 10px;
-    border: 2px solid var(--purple);
-    background: color-mix(in srgb, var(--purple) 15%, var(--card));
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    background: var(--card);
   }
   .chip.dim {
-    border-color: var(--border);
     color: var(--muted);
-    background: var(--bg2);
   }
   .path ol {
     display: flex;

@@ -51,11 +51,12 @@
     justify-content: center;
   }
   .chip {
-    font-size: 1.2rem;
-    font-weight: 900;
-    padding: 0.2em 0.7em;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--purple) 18%, var(--card));
-    border: 2px solid var(--purple);
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    background: var(--card);
   }
 </style>

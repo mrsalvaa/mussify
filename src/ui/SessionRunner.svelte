@@ -25,6 +25,10 @@
   let index = $state(0);
   let results = $state<SessionResult[]>([]);
   const current = $derived(safe[index]);
+  // Solo en desarrollo: exponer el ejercicio actual para pruebas automáticas de la UI.
+  $effect(() => {
+    if (import.meta.env.DEV) (window as unknown as { __mussifyExercise?: Exercise }).__mussifyExercise = current;
+  });
 
   function done(correct: boolean) {
     const ex = safe[index];

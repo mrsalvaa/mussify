@@ -55,7 +55,7 @@
     } catch (err) {
       msg = String(err);
     } finally {
-      fileInput.value = "";
+      if (fileInput) fileInput.value = "";
     }
   }
   async function reset() {

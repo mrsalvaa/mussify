@@ -37,7 +37,7 @@
       error = String(err);
     } finally {
       busy = false;
-      input.value = "";
+      if (input) input.value = "";
     }
   }
   async function del(it: LibraryItem) {

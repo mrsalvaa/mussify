@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.mussify.app</id>
+  <name>Mussify</name>
+  <summary>Aprendé música: lectura, oído, teoría y canciones</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>App libre y offline para aprender música desde cero: leer partitura, entrenar el oído, teoría hasta armonía avanzada y canciones de rock en piano, guitarra, bajo y batería.</p>
+    <p>Progresión estrictamente lineal: nunca aparece algo que todavía no aprendiste. Sin cuentas, sin nube, sin telemetría.</p>
+  </description>
+  <launchable type="desktop-id">org.mussify.app.desktop</launchable>
+  <content_rating type="oars-1.1"/>
+  <categories><category>Education</category><category>Music</category></categories>
+  <releases><release version="0.1.0" date="2026-10-22"/></releases>
+</component>

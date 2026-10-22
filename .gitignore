@@ -14,3 +14,11 @@ src-tauri/gen/android/buildSrc/.gradle/
 *.log
 .DS_Store
 /build-out/
+src-tauri/gen/android/**/build/
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/**/.cxx/
+src-tauri/gen/android/app/src/main/jniLibs/
+src-tauri/gen/android/app/tauri.properties
+src-tauri/gen/android/app/src/main/java/org/mussify/app/generated/
+src-tauri/gen/android/tauri.settings.gradle
+src-tauri/gen/android/app/tauri.build.gradle.kts

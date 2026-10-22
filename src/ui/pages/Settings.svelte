@@ -114,7 +114,7 @@
     </label>
   </section>
 
-  <h2>Aprendizaje</h2>
+  <h2>{t("settings.learning")}</h2>
   <section class="card col">
     <label class="col">{t("settings.threshold")}: {Math.round(prefs.threshold * 100)}%
       <input type="range" min="0.6" max="1" step="0.05" bind:value={prefs.threshold} onchange={savePrefs} />

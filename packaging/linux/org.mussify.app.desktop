@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Mussify
+GenericName=Aprender música
+Comment=Aprendé música: lectura, oído, teoría y canciones. Libre y sin conexión.
+Exec=mussify
+Icon=org.mussify.app
+Terminal=false
+Categories=Education;Music;AudioVideo;
+Keywords=música;partitura;oído;guitarra;piano;bajo;batería;teoría;

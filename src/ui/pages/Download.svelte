@@ -60,7 +60,7 @@
       <button onclick={() => nav.go({ view: "settings" })}>⚙️ {t("nav.settings")}</button>
     </div>
   {:else}
-    {#if tools && !tools.ytdlp}<div class="card warn"><p>No encontré yt-dlp en este sistema. Instalalo con <code>sudo pacman -S yt-dlp</code> o indicá su ruta en Ajustes.</p></div>{/if}
+    {#if tools && !tools.ytdlp}<div class="card warn"><p>{t("dl.noYtdlp")}</p></div>{/if}
     <form class="row" onsubmit={(e) => { e.preventDefault(); if (query.trim()) confirmSearch = true; }}>
       <input type="search" class="grow" bind:value={query} placeholder={t("dl.query")} aria-label={t("dl.query")} />
       <button class="btn-blue" type="submit" disabled={busy || !query.trim()}>🔎</button>

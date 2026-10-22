@@ -144,7 +144,7 @@
     await backend.libraryUpdate(item.id, undefined, meta);
   }
   function addMarker() {
-    const name = prompt(t("player.addMarker"), `Marca ${markers.length + 1}`);
+    const name = prompt(t("player.addMarker"), t("player.markerDefault", { n: markers.length + 1 }));
     if (!name) return;
     markers = [...markers, { time: pos, name }].sort((a, b) => a.time - b.time);
     void saveMeta({ markers });
@@ -207,7 +207,7 @@
 <div class="card">
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-  <canvas bind:this={canvas} class="wave" onclick={seekClick} aria-label="Forma de onda: tocá para ir a ese momento"></canvas>
+  <canvas bind:this={canvas} class="wave" onclick={seekClick} aria-label={t("player.waveform")}></canvas>
   <div class="row">
     <button class="btn-primary" onclick={toggle} disabled={!duration}>{playing ? "⏸" : "▶"}</button>
     <span class="time">{fmt(pos)} / {fmt(duration)}</span>
@@ -216,7 +216,7 @@
     <button class="btn-small" onclick={markB}>{t("player.loopB")}</button>
     {#if loopA !== null}<button class="btn-small" onclick={clearLoop}>{t("player.loopClear")}</button>{/if}
   </div>
-  {#if loopA !== null}<p class="small muted">Loop: {fmt(loopA)} – {loopB !== null ? fmt(loopB) : "…"}</p>{/if}
+  {#if loopA !== null}<p class="small muted">{t("player.loop", { a: fmt(loopA), b: loopB !== null ? fmt(loopB) : "…" })}</p>{/if}
   <label class="col small">{t("player.speed")}: {Math.round(speed * 100)}%
     <input type="range" min="0.25" max="1.5" step="0.05" value={speed} oninput={(e) => setSpeed(Number((e.target as HTMLInputElement).value))} />
   </label>
@@ -279,7 +279,7 @@
         <button class="chip {pos >= c.start && pos < c.end ? 'now' : ''}" onclick={() => backend.playerControl({ seek: c.start })} ondblclick={() => editChord(i)} title="{fmt(c.start)} · {t('player.edit')}">{chordShown(c.chord)}</button>
       {/each}
     </div>
-    <p class="small muted">✎ Doble clic en un acorde o sección para corregirlo.</p>
+    <p class="small muted">{t("player.editHint")}</p>
   {/if}
 </div>
 

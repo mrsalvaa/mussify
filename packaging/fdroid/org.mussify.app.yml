@@ -1,0 +1,33 @@
+# Metadatos de F-Droid (plantilla para fdroiddata). Completar Repo/commit al publicar.
+Categories:
+  - Science & Education
+  - Multimedia
+License: GPL-3.0-or-later
+SourceCode: https://REPO/mussify
+IssueTracker: https://REPO/mussify/issues
+AutoName: Mussify
+Summary: Aprendé música sin conexión: lectura, oído, teoría y canciones
+Description: |-
+  App libre para aprender música desde cero en piano, guitarra, bajo y batería.
+  Sin cuentas, sin nube, sin telemetría. Permisos: solo Internet (no se usa en Android).
+RepoType: git
+Repo: https://REPO/mussify.git
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1000
+    commit: v0.1.0
+    subdir: src-tauri/gen/android/app
+    sudo:
+      - apt-get update
+      - apt-get install -y npm
+    srclibs:
+      - rustup@stable
+    prebuild:
+      - $$rustup$$/rustup.sh -y
+      - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+      - cd ../../../.. && npm ci
+    build:
+      - cd ../../../.. && npx tauri android build --apk
+    ndk: r28c
+AutoUpdateMode: Version
+UpdateCheckMode: Tags

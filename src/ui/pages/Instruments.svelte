@@ -90,19 +90,19 @@
           {#each qualities as q (q)}<option value={q}>{t(`quality.${q}`)}</option>{/each}
         </select>
       </label>
-      <label class="col small">Tónica / fundamental
+      <label class="col small">{t("inst.root")}
         <select bind:value={rootKey}>
           {#each roots as r (r.letter + ":" + r.acc)}<option value="{r.letter}:{r.acc}">{formatLabel({ kind: "pc", pc: r })}</option>{/each}
         </select>
       </label>
       {#if tab === "piano"}
-        <label class="col small">Octavas<select bind:value={octaves}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option><option value={4}>4</option></select></label>
+        <label class="col small">{t("inst.octaves")}<select bind:value={octaves}><option value={1}>1</option><option value={2}>2</option><option value={3}>3</option><option value={4}>4</option></select></label>
       {:else}
         <label class="col small">{t("inst.tuning")}
           <select bind:value={tuningId}>{#each tunings as tt (tt.id)}<option value={tt.id}>{tt.name}</option>{/each}</select>
         </label>
       {/if}
-      <label class="row small"><input type="checkbox" bind:checked={showNames} /> Nombres</label>
+      <label class="row small"><input type="checkbox" bind:checked={showNames} /> {t("inst.names")}</label>
     </div>
     <p class="muted small">{t("inst.lockedHint")}</p>
   {/if}
@@ -112,13 +112,13 @@
   {:else if tab === "guitar" || tab === "bass"}
     <Fretboard instrument={tab} tuning={tuning.strings} frets={12} marks={fbMarks} {showNames} />
     {#if tab === "guitar" && shapes.length}
-      <h2>Acordes que conocés</h2>
+      <h2>{t("inst.knownChords")}</h2>
       <div class="shapes">{#each shapes as s (s.id)}<div class="card"><ChordDiagram shape={s} size={110} /><p class="center small">{s.chord.includes(":") ? s.chord.replace(":maj", "").replace(":min", "m") : s.chord}</p></div>{/each}</div>
     {/if}
   {:else}
     <DrumPads {known} />
     {#if grooves.length}
-      <h2>Grooves que conocés</h2>
+      <h2>{t("inst.knownGrooves")}</h2>
       {#each grooves as g, i (i)}
         <div class="card groove"><ScoreView score={grooveScore(g)} sp={8} maxWidth={560} /><PlayButton seq={scoreToSequence(grooveScore(g))} /></div>
       {/each}

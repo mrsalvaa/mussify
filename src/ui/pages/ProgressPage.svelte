@@ -6,20 +6,11 @@
   import { lessonContent } from "../../content";
   import { BRANCHES } from "../../core/curriculum/types";
   import { nav } from "../../state/nav.svelte";
-  import { t } from "../../i18n";
+  import { t, hasKey } from "../../i18n";
 
-  const GEN_NAMES: Record<string, string> = {
-    readNote: "Leer notas", findNote: "Ubicar notas", hearNote: "Nota y sonido", intervalEar: "Intervalos de oído", intervalName: "Leer intervalos",
-    intervalBuild: "Construir intervalos", chordEar: "Acordes de oído", chordSpell: "Notas de acordes", chordName: "Nombrar acordes", progressionEar: "Progresiones",
-    rhythmDictation: "Dictado rítmico", rhythmRead: "Lectura rítmica", rhythmBuild: "Escribir ritmos", melodicDictation: "Dictado melódico", figureValue: "Figuras",
-    keyboardFind: "Teclado", staffToKey: "Pentagrama → teclado", playMelody: "Tocar melodías", playChord: "Tocar acordes", fretName: "Notas en el diapasón",
-    fretFind: "Ubicar en el diapasón", tabRead: "Tablatura", chordDiagramName: "Diagramas", chordShapePlay: "Armar acordes", drumPieceRead: "Piezas de batería",
-    grooveEar: "Grooves de oído", grooveRead: "Leer grooves", keySignature: "Armaduras", scaleMissing: "Escalas", quiz: "Teoría", modeIdentify: "Modos",
-    degreeChord: "Grados", harmonicFunction: "Funciones", chordAnalysis: "Análisis", meterEar: "Compás de oído", measureComplete: "Completar compases",
-  };
   const acc = $derived(
     Object.entries(progress.genStats)
-      .map(([g, s]) => ({ g, name: GEN_NAMES[g] ?? g, pct: s.seen ? Math.round(((s.seen - s.wrong) / s.seen) * 100) : 0, seen: s.seen }))
+      .map(([g, s]) => ({ g, name: hasKey(`gen.${g}`) ? t(`gen.${g}`) : g, pct: s.seen ? Math.round(((s.seen - s.wrong) / s.seen) * 100) : 0, seen: s.seen }))
       .sort((a, b) => b.seen - a.seen),
   );
   function itemName(item: string): string {
@@ -39,7 +30,7 @@
     <div class="card stat"><span class="big">⭐ {Object.keys(progress.mastered).length}</span><span class="muted">{t("progress.mastered")}</span></div>
   </div>
 
-  <h2>Por rama</h2>
+  <h2>{t("progress.byBranch")}</h2>
   {#each BRANCHES as b (b)}
     {@const all = cur.byBranch.get(b) ?? []}
     {@const done = all.filter((l) => progress.mastered[l.concept]).length}
@@ -56,7 +47,7 @@
   {#if !weakestItems().length}<p class="muted">{t("progress.none")}</p>{/if}
   <ul>
     {#each weakestItems() as w (w.item)}
-      <li>{itemName(w.item)} — <span class="muted">{Math.round(w.rate * 100)}% de errores ({w.wrong}/{w.seen})</span></li>
+      <li>{itemName(w.item)} — <span class="muted">{t("progress.errorRate", { pct: Math.round(w.rate * 100), wrong: w.wrong, seen: w.seen })}</span></li>
     {/each}
   </ul>
   {#if weakestItems().length}<button class="btn-blue" onclick={() => nav.go({ view: "session", mode: "weak" })}>{t("practice.weak")}</button>{/if}

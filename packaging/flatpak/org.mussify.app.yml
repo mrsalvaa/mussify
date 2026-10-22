@@ -1,0 +1,33 @@
+# Manifiesto Flatpak. Empaqueta el binario compilado con scripts/build-linux.sh
+# (target/release/mussify). Para Flathub habría que compilar desde fuente con
+# flatpak-builder-tools (fuentes offline de cargo y npm); ver packaging/README.md.
+app-id: org.mussify.app
+runtime: org.gnome.Platform
+runtime-version: "49"
+sdk: org.gnome.Sdk
+command: mussify
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --socket=pulseaudio
+  # Red solo para la descarga a pedido con yt-dlp; la app igualmente la mantiene apagada por defecto.
+  - --share=network
+modules:
+  - name: mussify
+    buildsystem: simple
+    sources:
+      - type: file
+        path: ../../target/release/mussify
+      - type: file
+        path: ../linux/org.mussify.app.desktop
+      - type: file
+        path: ../linux/org.mussify.app.metainfo.xml
+      - type: file
+        path: ../../src-tauri/icons/128x128@2x.png
+    build-commands:
+      - install -Dm755 mussify /app/bin/mussify
+      - install -Dm644 org.mussify.app.desktop /app/share/applications/org.mussify.app.desktop
+      - install -Dm644 org.mussify.app.metainfo.xml /app/share/metainfo/org.mussify.app.metainfo.xml
+      - install -Dm644 128x128@2x.png /app/share/icons/hicolor/256x256/apps/org.mussify.app.png

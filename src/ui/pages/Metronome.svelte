@@ -74,10 +74,10 @@
     </div>
     <div class="beats" aria-label={t("metro.accents")}>
       {#each accents as a, i (i)}
-        <button class="beat a{a} {beat === i ? 'now' : ''}" onclick={() => cycleAccent(i)} aria-label="Pulso {i + 1}">{i + 1}</button>
+        <button class="beat a{a} {beat === i ? 'now' : ''}" onclick={() => cycleAccent(i)} aria-label={t("metro.beat", { n: i + 1 })}>{i + 1}</button>
       {/each}
     </div>
-    <p class="small muted">{t("metro.accents")}: tocá un pulso para cambiar su acento.</p>
+    <p class="small muted">{t("metro.accentHint")}</p>
     {#if !running}
       <button class="btn-primary big" onclick={start}>▶ {t("common.start")}</button>
     {:else}

@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.3.0] - 2026-10-22
+
+### Agregado
+- **Vista de mapa del temario**: además del índice tipo libro, se puede ver cada rama como un mapa de los temas. Cada capítulo es un grupo de puntos conectados en orden (lleno = dominado, con anillo = el que sigue, tenue = bloqueado y sin nombre). Al tocar un punto se ve su ficha y se puede abrir. La vista elegida se recuerda.
+
+### Corregido
+- **Buscar y descargar con yt-dlp desde la AppImage** fallaba con `yt-dlp falló: <no Python frame>`. La AppImage exporta variables propias (`PYTHONHOME`, `PYTHONPATH`, `LD_LIBRARY_PATH`…) que el Python del sistema heredaba y lo hacían caerse al arrancar. Ahora yt-dlp y ffmpeg se ejecutan con un entorno limpio.
+- Los errores de yt-dlp muestran la línea relevante (la que dice `ERROR`) en vez de la última línea del mensaje.
+
 ## [0.2.0] - 2026-10-22
 
 Rediseño de la interfaz: se mantiene el método de aprendizaje, pero ya no se parece a Duolingo.
@@ -41,5 +50,6 @@ Primera versión.
 - De los archivos importados con varias voces por pentagrama se muestra la primera voz.
 - El APK es solo para arm64-v8a.
 
+[0.3.0]: https://github.com/mrsalvaa/mussify/releases/tag/v0.3.0
 [0.2.0]: https://github.com/mrsalvaa/mussify/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mrsalvaa/mussify/releases/tag/v0.1.0

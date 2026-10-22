@@ -104,3 +104,8 @@ Solo análisis originales: estructura, progresiones (no protegibles), tonalidad,
 - **Estética sobria y editorial:** papel claro (o gris cálido oscuro), tinta, un único color de acento (bordó), Source Serif 4 para títulos y Source Sans 3 para texto (ambas OFL), controles finos, íconos lineales propios, sin emojis.
 - **Gamificación discreta:** racha y meta semanal quedan como una línea de texto; el feedback dice "Correcto"/"Incorrecto".
 - **Lecciones integradas:** la explicación incluye ejercicios "Probalo" intercalados después de los ejemplos (no cuentan para dominar), y al final una práctica para dominar el tema.
+
+## 18. Mapa del temario y entorno limpio para herramientas externas
+
+- El temario ofrece dos vistas de la misma progresión: **libro** (índice) y **mapa** (cada capítulo como grupo de temas conectados). Los temas bloqueados del mapa no muestran nombre.
+- Las AppImage exportan `PYTHONHOME`, `PYTHONPATH`, `LD_LIBRARY_PATH` y otras variables apuntando a su montaje. Los procesos del sistema que lanzamos (yt-dlp, ffmpeg) se ejecutan con esas variables quitadas y sin las entradas del montaje en `PATH`/`XDG_DATA_DIRS` (`net::system_command`).

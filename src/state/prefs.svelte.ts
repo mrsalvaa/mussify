@@ -17,6 +17,8 @@ export interface Prefs {
   weeklyGoal: number;
   volume: number;
   locale: string;
+  /** Vista del temario: índice de libro o mapa. */
+  homeView: "book" | "map";
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -33,6 +35,7 @@ export const DEFAULT_PREFS: Prefs = {
   weeklyGoal: 5,
   volume: 0.8,
   locale: "es-AR",
+  homeView: "book",
 };
 
 export const prefs = $state<Prefs>({ ...DEFAULT_PREFS });

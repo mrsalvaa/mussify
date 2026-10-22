@@ -1,6 +1,6 @@
 {
   "name": "mussify",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "App libre y offline para aprender música: lectura, oído, teoría y canciones.",
   "private": true,
   "type": "module",

@@ -27,8 +27,42 @@ pub struct ToolInfo {
     pub reason: Option<String>,
 }
 
+/// Variables que las AppImage (y otros empaquetados) exportan para sus propias librerías.
+/// Si las hereda un programa del sistema como yt-dlp (Python) o ffmpeg, se rompe
+/// ("Fatal Python error ... <no Python frame>"), así que se limpian antes de lanzarlo.
+const BUNDLE_VARS: &[&str] = &[
+    "PYTHONHOME", "PYTHONPATH", "PYTHONDONTWRITEBYTECODE", "LD_LIBRARY_PATH", "LD_PRELOAD", "PERLLIB",
+    "GST_PLUGIN_SYSTEM_PATH", "GST_PLUGIN_SYSTEM_PATH_1_0", "GST_PLUGIN_PATH", "GIO_MODULE_DIR",
+    "GDK_PIXBUF_MODULE_FILE", "GTK_PATH", "GTK_DATA_PREFIX", "GTK_EXE_PREFIX", "GTK_IM_MODULE_FILE",
+    "GSETTINGS_SCHEMA_DIR", "QT_PLUGIN_PATH",
+];
+
+/// Quita de una lista tipo PATH las entradas que apuntan dentro del paquete montado.
+fn strip_bundle_entries(value: &std::ffi::OsStr, appdir: Option<&std::ffi::OsStr>) -> std::ffi::OsString {
+    let Some(appdir) = appdir.filter(|a| !a.is_empty()) else { return value.to_os_string() };
+    let appdir = Path::new(appdir);
+    let kept: Vec<PathBuf> = std::env::split_paths(value).filter(|p| !p.starts_with(appdir)).collect();
+    std::env::join_paths(kept).unwrap_or_else(|_| value.to_os_string())
+}
+
+/// Comando para una herramienta del sistema, con el entorno limpio de variables del empaquetado.
+pub fn system_command(bin: &Path) -> Command {
+    let mut cmd = Command::new(bin);
+    for v in BUNDLE_VARS {
+        cmd.env_remove(v);
+    }
+    let appdir = std::env::var_os("APPDIR");
+    for v in ["PATH", "XDG_DATA_DIRS"] {
+        if let Some(val) = std::env::var_os(v) {
+            cmd.env(v, strip_bundle_entries(&val, appdir.as_deref()));
+        }
+    }
+    cmd
+}
+
 fn which(bin: &str) -> Option<PathBuf> {
     let path = std::env::var_os("PATH")?;
+    let path = strip_bundle_entries(&path, std::env::var_os("APPDIR").as_deref());
     for dir in std::env::split_paths(&path) {
         let p = dir.join(bin);
         if p.is_file() {
@@ -59,7 +93,7 @@ pub fn tool_info(db: &Db) -> ToolInfo {
         };
     }
     let p = ytdlp_path(db);
-    let version = p.as_ref().and_then(|p| Command::new(p).arg("--version").output().ok()).map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string());
+    let version = p.as_ref().and_then(|p| system_command(p).arg("--version").output().ok()).map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string());
     ToolInfo {
         supported: true,
         ytdlp: p.map(|x| x.display().to_string()),
@@ -86,7 +120,7 @@ pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
         return Err("Escribí qué querés buscar".into());
     }
     let bin = guard(db, "búsqueda")?;
-    let out = Command::new(bin)
+    let out = system_command(&bin)
         .args(["--flat-playlist", "--dump-json", "--no-warnings", "--ignore-config"])
         .arg(format!("ytsearch10:{q}"))
         .output();
@@ -100,7 +134,7 @@ pub fn search(db: &Db, query: &str) -> Result<Vec<SearchResult>, String> {
     let ok = out.status.success();
     db.net_log("www.youtube.com (yt-dlp)", &format!("Búsqueda: {q}"), ok);
     if !ok {
-        return Err(format!("yt-dlp falló: {}", String::from_utf8_lossy(&out.stderr).lines().last().unwrap_or("")));
+        return Err(format!("yt-dlp falló: {}", error_summary(&out.stderr)));
     }
     let mut res = Vec::new();
     for line in String::from_utf8_lossy(&out.stdout).lines() {
@@ -128,7 +162,7 @@ pub fn download(db: &Db, id: &str, title: &str, dir: &Path) -> Result<PathBuf, S
     let bin = guard(db, "descarga")?;
     let url = format!("https://www.youtube.com/watch?v={id}");
     let template = dir.join(format!("yt-{id}.%(ext)s"));
-    let mut cmd = Command::new(bin);
+    let mut cmd = system_command(&bin);
     cmd.args(["--no-playlist", "--no-warnings", "--ignore-config", "--no-mtime", "--print", "after_move:filepath", "-o"]).arg(&template);
     if which("ffmpeg").is_some() {
         // con ffmpeg se puede convertir a un formato que el motor decodifica siempre
@@ -141,8 +175,43 @@ pub fn download(db: &Db, id: &str, title: &str, dir: &Path) -> Result<PathBuf, S
     let ok = out.status.success();
     db.net_log("www.youtube.com (yt-dlp)", &format!("Descarga de audio: {title}"), ok);
     if !ok {
-        return Err(format!("La descarga falló: {}", String::from_utf8_lossy(&out.stderr).lines().last().unwrap_or("")));
+        return Err(format!("La descarga falló: {}", error_summary(&out.stderr)));
     }
     let path = String::from_utf8_lossy(&out.stdout).lines().last().map(|s| PathBuf::from(s.trim())).filter(|p| p.is_file());
     path.ok_or_else(|| "yt-dlp terminó pero no encontré el archivo descargado".into())
+}
+
+/// La línea más útil del error de yt-dlp (la que dice ERROR, o la primera no vacía).
+fn error_summary(stderr: &[u8]) -> String {
+    let text = String::from_utf8_lossy(stderr);
+    let lines: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
+    lines
+        .iter()
+        .find(|l| l.starts_with("ERROR") || l.starts_with("Fatal Python error"))
+        .or_else(|| lines.first())
+        .map(|l| l.to_string())
+        .unwrap_or_else(|| "error desconocido".into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cleans_bundle_environment() {
+        let joined = std::env::join_paths(["/tmp/.mount_X/usr/bin", "/usr/bin", "/tmp/.mount_X/bin"]).unwrap();
+        let out = strip_bundle_entries(&joined, Some(std::ffi::OsStr::new("/tmp/.mount_X")));
+        assert_eq!(out, std::ffi::OsString::from("/usr/bin"));
+        let cmd = system_command(Path::new("/bin/true"));
+        let removed: Vec<_> = cmd.get_envs().filter(|(_, v)| v.is_none()).map(|(k, _)| k.to_string_lossy().to_string()).collect();
+        assert!(removed.contains(&"PYTHONHOME".to_string()));
+        assert!(removed.contains(&"LD_LIBRARY_PATH".to_string()));
+    }
+
+    #[test]
+    fn picks_useful_error_line() {
+        let e = b"Fatal Python error: init_fs_encoding: failed to get the Python codec\nPython runtime state: core initialized\n\nCurrent thread (most recent call first):\n  <no Python frame>\n";
+        assert!(error_summary(e).starts_with("Fatal Python error"));
+        assert_eq!(error_summary(b"WARNING: x\nERROR: [youtube] abc: Video unavailable\n"), "ERROR: [youtube] abc: Video unavailable");
+    }
 }

@@ -6,9 +6,13 @@ Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. 
 
 ## Capturas
 
-| Temario | Lección con ejercicio intercalado |
+| Temario (libro) | Temario (mapa) |
 |---|---|
-| ![Temario](docs/screenshots/temario.png) | ![Lección](docs/screenshots/leccion.png) |
+| ![Temario](docs/screenshots/temario.png) | ![Mapa](docs/screenshots/mapa.png) |
+
+| Lección con ejercicio intercalado |
+|---|
+| ![Lección](docs/screenshots/leccion.png) |
 
 | Ejercicio | Ficha de canción |
 |---|---|
@@ -20,7 +24,7 @@ Para Linux (CachyOS/Arch y cualquier distro) y Android, desde un mismo código. 
 
 ## Qué tiene
 
-- **Temario en forma de libro** (capítulos y temas numerados, con su porcentaje de dominio) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
+- **Temario en forma de libro o de mapa** (capítulos y temas numerados con su porcentaje de dominio, o un mapa de los temas conectados) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
 - **Progresión estrictamente lineal**: cada lección enseña **un** concepto; nada aparece antes de aprenderse (ni notas, ni figuras, ni acordes, ni términos en los textos). Esto se verifica con tests sobre cada lección y con una auditoría que corre en la app antes de cada ejercicio.
 - **Ejercicios generados al azar** (con semilla) que ponderan lo que más fallás: lectura de notas, ubicar en el teclado o el diapasón, intervalos, acordes, escalas, armaduras, grados y funciones, progresiones de oído, dictado melódico y rítmico, tablatura, diagramas de acordes, grooves de batería, y más.
 - **Repaso espaciado** (SM-2) y práctica de "lo que más fallás".

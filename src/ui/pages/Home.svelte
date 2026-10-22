@@ -9,6 +9,8 @@
   import { nav } from "../../state/nav.svelte";
   import { t } from "../../i18n";
   import Icon from "../Icon.svelte";
+  import KnowledgeMap from "../KnowledgeMap.svelte";
+  import { savePrefs } from "../../state/prefs.svelte";
 
   let { branch = "trunk" }: { branch?: Branch } = $props();
   let selected = $state<Branch>("trunk");
@@ -84,6 +86,16 @@
     <button class="btn-ghost btn-small link" onclick={() => nav.go({ view: "placement", branch: selected })}>{t("map.placement")}</button>
   </div>
 
+  <div class="viewbar">
+    <div class="seg" role="group" aria-label={t("home.view")}>
+      <button class={prefs.homeView !== "map" ? "on" : ""} aria-pressed={prefs.homeView !== "map"} onclick={() => { prefs.homeView = "book"; savePrefs(); }}><Icon name="book" size={16} /> {t("home.viewBook")}</button>
+      <button class={prefs.homeView === "map" ? "on" : ""} aria-pressed={prefs.homeView === "map"} onclick={() => { prefs.homeView = "map"; savePrefs(); }}><Icon name="map" size={16} /> {t("home.viewMap")}</button>
+    </div>
+  </div>
+
+  {#if prefs.homeView === "map"}
+    {#key selected}<KnowledgeMap {chapters} {status} />{/key}
+  {:else}
   <ol class="toc">
     {#each chapters as c, ci (c.unit + c.lessons[0].id)}
       {@const st = chapterState(c)}
@@ -116,9 +128,40 @@
       </li>
     {/each}
   </ol>
+  {/if}
 </div>
 
 <style>
+  .viewbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: -0.8rem 0 0.8rem;
+  }
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .seg button {
+    border: none;
+    border-radius: 0;
+    min-height: 34px;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.9rem;
+    background: transparent;
+    color: var(--muted);
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .seg button + button {
+    border-left: 1px solid var(--rule);
+  }
+  .seg button.on {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
   .branches {
     display: flex;
     gap: 1.2rem;

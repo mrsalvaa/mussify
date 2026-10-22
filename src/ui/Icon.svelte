@@ -25,6 +25,7 @@
     keys: "M3 5h18v14H3V5Zm4 0v8M11 5v8M15 5v8M7 13v6M11 13v6M15 13v6",
     glossary: "M6 4h12v16H6V4Zm3 4h6M9 12h6",
     journal: "M6 3h11l2 2v16H6V3Zm3 6h7M9 13h7M9 17h4",
+    map: "M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14M15 6v14",
     review: "M4 12a8 8 0 1 0 2.3-5.7M4 4v5h5",
   };
 </script>

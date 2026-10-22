@@ -1,0 +1,16 @@
+node_modules/
+dist/
+target/
+src-tauri/target/
+src-tauri/gen/schemas/
+src-tauri/gen/android/app/build/
+src-tauri/gen/android/.gradle/
+src-tauri/gen/android/build/
+src-tauri/gen/android/app/src/main/jniLibs/
+src-tauri/gen/android/local.properties
+src-tauri/gen/android/app/src/main/assets/
+src-tauri/gen/android/buildSrc/build/
+src-tauri/gen/android/buildSrc/.gradle/
+*.log
+.DS_Store
+/build-out/

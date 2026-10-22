@@ -82,7 +82,7 @@
     {#if due.length}
       <button class="btn-ghost btn-small link" onclick={() => nav.go({ view: "session", mode: "review" })}><Icon name="review" size={16} />{t("map.reviewCount", { n: due.length })}</button>
     {/if}
-    <span>{t("home.streakLine", { days: streak(), done: weeklySessions(), goal: prefs.weeklyGoal })}</span>
+    <span>{t(streak() === 1 ? "home.streakLine1" : "home.streakLine", { days: streak(), done: weeklySessions(), goal: prefs.weeklyGoal })}</span>
     <button class="btn-ghost btn-small link" onclick={() => nav.go({ view: "placement", branch: selected })}>{t("map.placement")}</button>
   </div>
 

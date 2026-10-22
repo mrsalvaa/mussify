@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.4.1] - 2026-10-22
+
+### Corregido
+- **Android: los ajustes y el progreso no se cargaban al abrir la app en frío.** El WebView pedía los datos antes de que el backend terminara de arrancar (el motor de audio tarda), la lectura fallaba y la app arrancaba con los valores por defecto (por ejemplo, en inglés aunque se hubiera elegido español). Ahora esas llamadas se reintentan hasta que el backend está listo, y el progreso nunca se guarda encima si no se pudo leer.
+- "Racha de 1 días" → "Racha de 1 día" (y "1-day streak" en inglés).
+
 ## [0.4.0] - 2026-10-22
 
 ### Agregado

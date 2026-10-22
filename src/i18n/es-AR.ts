@@ -251,6 +251,7 @@ export const ES_AR: Record<string, string> = {
   "home.blockedTitle": "Para seguir",
   "home.progressLine": "{done} de {total} temas dominados",
   "home.streakLine": "Racha de {days} días · {done}/{goal} sesiones esta semana",
+  "home.streakLine1": "Racha de 1 día · {done}/{goal} sesiones esta semana",
   "home.mastered": "dominado",
   "home.here": "seguir acá",
   "home.viewBook": "Libro",

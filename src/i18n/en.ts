@@ -224,6 +224,7 @@ export const EN: Record<string, string> = {
   "home.blockedTitle": "To continue",
   "home.progressLine": "{done} of {total} topics mastered",
   "home.streakLine": "{days}-day streak · {done}/{goal} sessions this week",
+  "home.streakLine1": "1-day streak · {done}/{goal} sessions this week",
   "home.mastered": "mastered",
   "home.here": "continue here",
   "home.viewBook": "Book",

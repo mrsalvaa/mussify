@@ -63,7 +63,16 @@ async function invoke<T>(cmd: string, args?: unknown, opts?: { headers?: Record<
     const core = await import("@tauri-apps/api/core");
     invokeFn = core.invoke as Invoke;
   }
-  return invokeFn<T>(cmd, args, opts);
+  // En Android el WebView puede llamar antes de que el backend termine de arrancar
+  // (el motor de audio tarda): esos errores se reintentan durante unos segundos.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await invokeFn<T>(cmd, args, opts);
+    } catch (e) {
+      if (attempt >= 50 || !String(e).includes("state not managed")) throw e;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+  }
 }
 
 const INST: Record<string, string> = { piano: "piano", guitar: "guitar", guitarDist: "guitarDist", bass: "bass", drums: "drums", click: "click" };

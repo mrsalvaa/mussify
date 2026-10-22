@@ -37,17 +37,22 @@ const empty = (): ProgressData => ({ version: 1, mastered: {}, cards: {}, stats:
 
 export const progress = $state<ProgressData>(empty());
 
+// Si no se pudo leer el progreso guardado, no se escribe encima (se perdería).
+let loadFailed = false;
+
 export async function loadProgress(): Promise<void> {
   try {
     const raw = await backend.kvGet("progress");
     if (raw) Object.assign(progress, { ...empty(), ...JSON.parse(raw) });
+    loadFailed = false;
   } catch {
-    /* empezamos de cero */
+    loadFailed = true;
   }
 }
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 export function saveProgress(): void {
+  if (loadFailed) return;
   clearTimeout(timer);
   timer = setTimeout(() => void backend.kvSet("progress", JSON.stringify($state.snapshot(progress))), 250);
 }

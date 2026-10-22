@@ -5,7 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vitest/importMeta", "vite/client"],
+    "types": ["vitest/importMeta", "vite/client", "node"],
     "strict": true,
     "noImplicitAny": true,
     "resolveJsonModule": true,

@@ -186,7 +186,7 @@ export function buildExample(ex: Example): ExampleView {
       const [s, f, d] = t.split(":");
       if (s === "r") return { duration: parseDur(f), notes: [] };
       const string = Number(s), fret = Number(f);
-      return { duration: parseDur(d ?? "q"), notes: [{ pitch: pitchAt(tuning, string, fret), tab: { string, fret } }] };
+      return { duration: parseDur(d ?? "w"), notes: [{ pitch: pitchAt(tuning, string, fret), tab: { string, fret } }] };
     });
     const hasRhythm = toks.some((t) => t.split(":").length === 3);
     const score = singleStaffScore({ clef: ex.bass ? "bass" : "treble", instrument: ex.bass ? "bass" : "guitar", events, showTab: true, showStaff: false, tuning: tuning.strings, freeNotes: !hasRhythm, hideTimeSig: !ex.ts, timeSig: ex.ts ? parseTs(ex.ts) : undefined, tempo: ex.tempo ?? 80 });

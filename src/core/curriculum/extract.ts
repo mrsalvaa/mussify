@@ -194,7 +194,10 @@ export function scoreRequirements(score: Score): Requirement[] {
       let prevTie = false;
       for (const e of m.events) {
         const isRest = e.notes.length === 0;
-        const showsRhythm = !score.freeNotes && (hasStaff || rhythmLine || (tuning !== null && !isRest));
+        // En notas sueltas, las redondas se leen como "una nota" sin valor rítmico;
+        // cualquier otra figura sí muestra ritmo.
+        const freeButRhythmic = !!score.freeNotes && (e.duration.base !== "w" || !!e.duration.dots || isRest);
+        const showsRhythm = (!score.freeNotes || freeButRhythmic) && (hasStaff || rhythmLine || (tuning !== null && !isRest));
         if (showsRhythm && (hasStaff || rhythmLine || !isRest)) add(figureConcept(e.duration.base, isRest));
         if (showsRhythm && e.duration.dots) add(e.duration.dots === 1 ? "rh.dot" : "rh.ddot");
         if (showsRhythm && e.duration.tuplet) add(e.duration.tuplet.n === 3 ? "rh.triplet" : "rh.tuplet");

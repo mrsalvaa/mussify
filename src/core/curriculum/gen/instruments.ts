@@ -119,8 +119,9 @@ export const playChord: Generator = {
   requires: ["pn.ch.maj"],
   canRun: (ctx) => has(ctx, "pn.ch.maj"),
   make(ctx) {
-    const qs = knownQualities(ctx.known).filter((q) => (q === "maj" && has(ctx, "pn.ch.maj")) || (q === "min" && has(ctx, "pn.ch.min")) || ((q === "dim" || q === "aug") && has(ctx, "pn.ch.dimaug")) || (["7", "maj7", "m7"].includes(q) && has(ctx, "pn.ch.7")));
-    const q = ctx.rng.weighted(qs, (x) => (x === "min" && ctx.focus === "pn.ch.min" ? 4 : 1));
+    const qs = knownQualities(ctx.known).filter((q) => (q === "maj" && has(ctx, "pn.ch.maj")) || (q === "min" && has(ctx, "pn.ch.min")) || ((q === "dim" || q === "aug") && has(ctx, "pn.ch.dimaug")) || (["7", "maj7", "m7"].includes(q) && has(ctx, "pn.ch.7")) || ((q === "sus2" || q === "sus4") && has(ctx, "pn.ch.sus")));
+    const focusQ: Record<string, string[]> = { "pn.ch.min": ["min"], "pn.ch.dimaug": ["dim", "aug"], "pn.ch.7": ["7", "maj7", "m7"], "pn.ch.sus": ["sus2", "sus4"] };
+    const q = ctx.rng.weighted(qs, (x) => (focusQ[ctx.focus]?.includes(x) ? 4 : 1));
     const roots = nameablePcs(ctx.known).filter((r) => (r.acc === 0 || has(ctx, "pn.black")) && chordPcs({ root: r, quality: q }).every((p) => Math.abs(p.acc) <= 1 && (p.acc === 0 || (has(ctx, "pn.black") && has(ctx, p.acc > 0 ? "acc.sharp" : "acc.flat")))));
     const root = ctx.rng.pick(roots.length ? roots : [pc(0)]);
     const chord: Chord = { root, quality: q };
@@ -130,8 +131,8 @@ export const playChord: Generator = {
     return {
       prompt: { text: msg(inv ? "ex.playChord.inv" : "ex.playChord.prompt", { chord: { kind: "chord", chord }, inv: L.msg(inv === 1 ? "inv.first" : "inv.second") }) },
       answer: { kind: "keys", mode: "set", target: v, match: anyInversion ? "pc" : "exact", from: 55, to: 84 },
-      targets: [q === "maj" ? "pn.ch.maj" : q === "min" ? "pn.ch.min" : q === "dim" || q === "aug" ? "pn.ch.dimaug" : "pn.ch.7", ...(inv ? ["pn.inv"] : [])],
-      uses: [...flatConcepts(chordTheoryRequirements(chord)), "pn.ch.maj", ...(q === "min" ? ["pn.ch.min"] : []), ...(root.acc ? ["pn.black"] : []), ...(inv ? ["pn.inv", "ch.inv"] : [])],
+      targets: [q === "maj" ? "pn.ch.maj" : q === "min" ? "pn.ch.min" : q === "dim" || q === "aug" ? "pn.ch.dimaug" : q === "sus2" || q === "sus4" ? "pn.ch.sus" : "pn.ch.7", ...(inv ? ["pn.inv"] : [])],
+      uses: [...flatConcepts(chordTheoryRequirements(chord)), "pn.ch.maj", ...(q === "min" ? ["pn.ch.min"] : []), ...(q === "sus2" || q === "sus4" ? ["pn.ch.sus"] : []), ...(q === "dim" || q === "aug" ? ["pn.ch.dimaug"] : []), ...(["7", "maj7", "m7"].includes(q) ? ["pn.ch.7"] : []), ...(root.acc ? ["pn.black"] : []), ...(inv ? ["pn.inv", "ch.inv"] : [])],
       item: `pn.chord.${q}${inv}`,
     };
   },
@@ -236,8 +237,8 @@ export const tabRead: Generator = {
     const seq: { string: number; fret: number }[] = [];
     for (let i = 0; i < len; i++) seq.push(i === 0 ? pickFocused(ctx, pool, (x) => posItem(instrument, tuning, x)) : ctx.rng.pick(pool));
     const withRhythm = has(ctx, "rh.q") && has(ctx, "rh.8") && params.rhythm !== false;
-    const events: ScoreEvent[] = seq.map((pos) => ({ duration: dur(withRhythm ? ctx.rng.pick(["q", "8"] as const) : "q"), notes: [{ pitch: pitchAt(tuning, pos.string, pos.fret), tab: pos }] }));
-    const score = { ...singleStaffScore({ clef: instrument === "bass" ? "bass" : "treble", instrument, events, showTab: true, showStaff: false, tuning: tuning.strings, freeNotes: !withRhythm, hideTimeSig: true }) };
+    const events: ScoreEvent[] = seq.map((pos) => ({ duration: dur(withRhythm ? ctx.rng.pick(["q", "8"] as const) : "w"), notes: [{ pitch: pitchAt(tuning, pos.string, pos.fret), tab: pos }] }));
+    const score = { ...singleStaffScore({ clef: instrument === "bass" ? "bass" : "treble", instrument, events, showTab: true, showStaff: false, tuning: tuning.strings, freeNotes: !withRhythm, hideTimeSig: true, tempo: withRhythm ? 90 : 200 }) };
     if (!withRhythm) score.freeNotes = true;
     const pre = instrument === "guitar" ? "gt" : "bs";
     return {

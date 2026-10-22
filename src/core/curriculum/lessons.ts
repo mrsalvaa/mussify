@@ -159,7 +159,7 @@ T("clefs2", "clef.tenor", [], []);
 
 // ============================ PIANO ============================
 const PN = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("piano", unit, c, req, ex, len);
-PN("keyboard", "pn.keyboard", ["t.notes"], []);
+PN("keyboard", "pn.keyboard", ["t.octave"], []);
 for (const l of ["C", "D", "E", "F", "G", "A", "B"]) PN("keyboard", `pn.key.${l}`, [], [g("keyboardFind", undefined, 2), g("keyboardName")]);
 PN("keyboard", "pn.middleC", ["read.treble.C4", "t.octave"], [g("staffToKey"), g("keyboardFind", undefined, 0.5)]);
 PN("hands", "pn.fingers", [], [g("keyboardFind", undefined, 0.5)]);
@@ -183,7 +183,7 @@ PN("style", "pn.voicing", ["h.field7"], [g("playChord"), g("degreeChord")]);
 const GT = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("guitar", unit, c, req, ex, len);
 const gtFret = [g("fretName", { instrument: "guitar" }, 2), g("fretFind", { instrument: "guitar" }), g("tabRead", { instrument: "guitar" })];
 const gtChord = [g("chordDiagramName", undefined, 2), g("chordShapePlay", undefined, 2), g("guitarChordEar")];
-GT("basics", "gt.parts", ["t.notes"], []);
+GT("basics", "gt.parts", ["t.octave"], []);
 GT("basics", "gt.tab", [], []);
 for (const s of [6, 1, 5, 4, 3, 2]) GT("basics", `gt.str.${s}`, [], gtFret);
 GT("first-chords", "gt.ch.Em", [], gtChord);
@@ -233,7 +233,7 @@ GT("solo", "gt.slash", ["ch.slash"], [g("chordDiagramName")]);
 // ============================ BAJO ============================
 const BS = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("bass", unit, c, req, ex, len);
 const bsFret = [g("fretName", { instrument: "bass" }, 2), g("fretFind", { instrument: "bass" }), g("tabRead", { instrument: "bass" })];
-BS("basics", "bs.parts", ["t.notes"], []);
+BS("basics", "bs.parts", ["t.octave"], []);
 BS("basics", "bs.tab", [], []);
 for (const s of [4, 3, 2, 1]) BS("basics", `bs.str.${s}`, [], bsFret);
 BS("first-position", "bs.pos.4.1", [], bsFret);
@@ -263,7 +263,7 @@ BS("technique", "bs.slap", [], [g("bassShape")]);
 const DR = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("drums", unit, c, req, ex, len);
 DR("kit", "dr.kit", ["t.sound"], []);
 DR("kit", "clef.percussion", ["t.staff"], []);
-DR("kit", "dr.read.kick", [], [g("drumPieceRead", undefined, 2)]);
+DR("kit", "dr.read.kick", ["rh.q"], [g("drumPieceRead", undefined, 2)]);
 DR("kit", "dr.read.snare", [], [g("drumPieceRead", undefined, 2), g("drumPieceEar")]);
 DR("kit", "dr.read.hhClosed", [], [g("drumPieceRead", undefined, 2), g("drumPieceEar")]);
 DR("grooves", "dr.groove.q", ["rh.q", "ts.4/4"], [g("grooveRead", undefined, 2), g("drumPieceEar")]);

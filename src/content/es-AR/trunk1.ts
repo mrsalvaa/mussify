@@ -85,7 +85,7 @@ export const TRUNK1: LessonTexts = {
     quiz: [
       Q("¿Qué línea marca la clave de Sol?", "La 2ª", "La 1ª", "La 3ª", "La 4ª"),
       Q("En clave de Sol, la nota sobre la 2ª línea es...", "Sol", "Do", "Fa", "La"),
-      Q("¿Para qué sirve la clave?", "Para saber qué nota es cada línea y espacio", "Para saber qué tan fuerte tocar", "Para saber el tempo", "Para nada, es decorativa"),
+      Q("¿Para qué sirve la clave?", "Para saber qué nota es cada línea y espacio", "Para saber qué tan fuerte tocar", "Para saber qué tan rápido tocar", "Para nada, es decorativa"),
     ],
   },
   "read.treble.G4": {

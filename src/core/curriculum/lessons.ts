@@ -89,8 +89,9 @@ const abs = (level: number, w = 0.5) => g("absNote", { level }, w);
 T("keys", "sc.major", [], [g("scaleMissing"), g("scalePattern"), abs(1)]);
 T("keys", "t.key", [], [g("scaleMissing", undefined, 0.5), abs(1)]);
 for (const f of [1, -1, 2, -2, 3, -3, 4, -4]) T("keys", `ks.${f}`, [], [g("keySignature", undefined, 2), g("keyAccidentals"), g("scaleMissing"), abs(Math.abs(f) <= 2 ? 2 : 3)]);
-T("keys", "ks.far", [], [g("keySignature", undefined, 2), g("keyAccidentals")]);
+// El círculo de quintas (la regla para deducir armaduras) antes de las seis armaduras lejanas.
 T("keys", "t.circle5", [], [g("keySignature"), g("keyAccidentals")]);
+T("keys", "ks.far", [], [g("keySignature", undefined, 2), g("keyAccidentals")]);
 T("keys", "sc.minor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern"), abs(3)]);
 T("keys", "t.relative", [], [g("relativeKey", undefined, 2), g("keySignature")]);
 T("keys", "sc.harmonicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern"), abs(3)]);

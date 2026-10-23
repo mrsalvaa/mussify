@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [Sin publicar]
+
+Ajuste de la curva de aprendizaje (detalle en `docs/learning-curve-audit.md`). No cambia ningún id ni el formato de los datos guardados.
+
+### Cambiado
+- **El oído avanzado llega más tarde.** "¿Es la misma nota más aguda?" y "¿a cuántas octavas?" salen de la lección de octava (3ª del curso). Reconocer notas sin referencia sale de las lecciones de lectura y de alteraciones. Al inicio solo queda la comparación simple: "¿cuál es más aguda?" y, ahora también, "¿cuál es más grave?".
+- **Lección puente nueva, "Notas con una referencia"**, al final de los intervalos: se oye un Do y después otra nota, y se la deduce por el intervalo (dos opciones). Ahí aparecen también las octavas por oído, primero a una octava de distancia.
+- **Notas sin referencia, de a poco**, después de la puente: Do o Sol (escala mayor), luego Do Mi Sol La (primeras armaduras), luego las 7 naturales (armaduras de 3–4 alteraciones y escalas menores) y, desde los acordes, con alteraciones en cualquier octava.
+- El círculo de quintas va antes de las armaduras de 5, 6 y 7 alteraciones.
+- La primera lección de compás (4/4) ya no trae dictado rítmico: empieza en 3/4. El primer dictado melódico suma un paso intermedio (relacionar el sonido con la nota escrita).
+- **Menos repetición entre lecciones parecidas**: en las series de notas, intervalos, armaduras, acordes, modos, notas de guitarra y bajo y piezas de batería, cada lección pone adelante otro enfoque (leer, ubicar, escuchar, construir, encontrar…).
+
 ## [0.5.0] - 2026-10-22
 
 ### Agregado

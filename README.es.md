@@ -31,7 +31,7 @@ Para Linux y Android, desde un mismo código. **Sin cuentas, sin nube, sin telem
 - **Temario en forma de libro o de mapa** (capítulos y temas numerados con su porcentaje de dominio, o un mapa de los temas conectados) con cinco ramas: *Teoría y oído* (tronco común, 152 lecciones), *Piano*, *Guitarra*, *Bajo* y *Batería* (289 lecciones en total).
 - **Progresión estrictamente lineal**: cada lección enseña **un** concepto; nada aparece antes de aprenderse (ni notas, ni figuras, ni acordes, ni términos en los textos). Esto se verifica con tests sobre cada lección y con una auditoría que corre en la app antes de cada ejercicio.
 - **Ejercicios generados al azar** (con semilla) que ponderan lo que más fallás: lectura de notas, ubicar en el teclado o el diapasón, intervalos, acordes, escalas, armaduras, grados y funciones, progresiones de oído, dictado melódico y rítmico, tablatura, diagramas de acordes, grooves de batería, y más.
-- **Reconocer notas de oído, sin referencia**, integrado en las lecciones de lectura y cada vez más difícil (de "¿esto es Sol?" a cualquier nota en cualquier octava), y ejercicios de **tocar el pentagrama**.
+- **Reconocer notas de oído**: después de los intervalos, primero con una nota de referencia y después sin ella, empezando con dos notas y ampliando de a poco hasta cualquier nota en cualquier octava. Y ejercicios de **tocar el pentagrama**.
 - Las sesiones no repiten una pregunta seguida y mezclan distintos tipos de ejercicio.
 - **Repaso espaciado** (SM-2) y práctica de "lo que más fallás".
 - **Test de nivel opcional** por rama: desbloquea solo lo que demostrás.

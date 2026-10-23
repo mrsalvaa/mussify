@@ -221,4 +221,18 @@ export const TRUNK2: LessonTexts = {
       Q("Una segunda mayor invertida es...", "una séptima menor", "una séptima mayor", "una segunda menor", "una sexta mayor"),
     ],
   },
+  "ear.reference": {
+    title: "Notas con una referencia",
+    body: [
+      P("Nombrar una nota de oído sin nada con qué compararla es difícil. Con una **referencia** es mucho más fácil: primero escuchás una nota de la que sabés el nombre (acá, siempre **Do**), después otra, y la deducís con los **intervalos** que ya reconocés."),
+      EX({ notes: "C4 G4", clef: "treble", labels: true }, "Do y después Sol: una quinta justa arriba. Si escuchás una quinta, es Sol."),
+      EX({ notes: "C4 E4", clef: "treble", labels: true }, "Do y después Mi: una tercera mayor."),
+      P("La misma idea sirve con la **octava**: una nota y la misma nota más aguda suenan \"del mismo color\". Vas a empezar con notas a una octava de distancia."),
+      TIP("No adivines: cantá la referencia por dentro y después el intervalo hasta la segunda nota."),
+    ],
+    quiz: [
+      Q("¿Para qué sirve la nota de referencia?", "Para deducir la otra nota con intervalos", "Para afinar el instrumento", "Para saber el tempo", "Para nada, es un adorno"),
+      Q("Escuchás Do y después una nota una quinta justa más aguda. ¿Cuál es?", "Sol", "Fa", "La", "Mi"),
+    ],
+  },
 };

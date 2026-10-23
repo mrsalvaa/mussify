@@ -217,4 +217,18 @@ export const TRUNK2: LessonTexts = {
       Q("An inverted major second is...", "a minor seventh", "a major seventh", "a minor second", "a major sixth"),
     ],
   },
+  "ear.reference": {
+    title: "Notes with a reference",
+    body: [
+      P("Naming a note by ear with nothing to compare it to is hard. With a **reference** it's much easier: first you hear a note you know the name of (here, always **C**), then another one, and you work it out with the **intervals** you already recognize."),
+      EX({ notes: "C4 G4", clef: "treble", labels: true }, "C, then G: a perfect fifth above. If you hear a fifth, it's G."),
+      EX({ notes: "C4 E4", clef: "treble", labels: true }, "C, then E: a major third."),
+      P("The same idea works with the **octave**: a note and the same note higher sound like \"the same color\". You'll start with notes one octave apart."),
+      TIP("Don't guess: sing the reference in your head, then the interval up to the second note."),
+    ],
+    quiz: [
+      Q("What is the reference note for?", "To work out the other note with intervals", "To tune the instrument", "To know the tempo", "Nothing, it's decoration"),
+      Q("You hear C and then a note a perfect fifth higher. Which is it?", "G", "F", "A", "E"),
+    ],
+  },
 };

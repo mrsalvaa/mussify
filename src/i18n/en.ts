@@ -14,6 +14,8 @@ export const EN: Record<string, string> = {
   "ex.noteOrder.before": "Which note comes before {note}?",
   "ex.nameConvert.toEnglish": "How is {name} written with letters?",
   "ex.nameConvert.toLatin": "Which note is {name}?",
+  "ex.pitchLower.prompt": "Listen to both sounds. Which one is lower?",
+  "ex.absNote.withRef": "First you'll hear {ref} (the reference). Which note is the second one?",
   "ex.octaveName.up1": "Which note is one octave above {note}?",
   "ex.octaveName.upN": "Which note is {n} octaves above {note}?",
   "ex.octaveName.down1": "Which note is one octave below {note}?",

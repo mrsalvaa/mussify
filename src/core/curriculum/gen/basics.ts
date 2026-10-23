@@ -21,9 +21,11 @@ export const pitchHigher: Generator = {
       { time: 0, duration: 0.8, note: a, velocity: 0.8, instrument: "piano" as const },
       { time: 1.0, duration: 0.8, note: b, velocity: 0.8, instrument: "piano" as const },
     ], cursor: [], duration: 1.8, measureStarts: [] };
-    const correct = b > a ? 1 : 0;
+    // Comparación simple en los dos sentidos: "¿cuál es más aguda?" / "¿cuál es más grave?".
+    const lower = ctx.rng.bool();
+    const correct = (lower ? b < a : b > a) ? 1 : 0;
     return {
-      prompt: { text: msg("ex.pitchHigher.prompt"), audio: seq, autoplay: true },
+      prompt: { text: msg(lower ? "ex.pitchLower.prompt" : "ex.pitchHigher.prompt"), audio: seq, autoplay: true },
       answer: { kind: "choice", options: [L.msg("ex.pitchHigher.first"), L.msg("ex.pitchHigher.second")], correct },
       targets: ["t.sound"],
       uses: ["t.sound"],
@@ -82,8 +84,10 @@ function twoNotes(a: number, b: number) {
 export const octaveSame: Generator = {
   requires: ["t.octave"],
   canRun: () => true,
-  make(ctx) {
-    const octaves = ctx.rng.weighted([1, 2, 3], (k) => (k === 1 ? 3 : k === 2 ? 2 : 1));
+  make(ctx, params) {
+    // `maxOctaves` limita la distancia la primera vez que aparece (1 = solo una octava).
+    const max = Math.max(1, Math.min(3, Number(params.maxOctaves ?? 3)));
+    const octaves = ctx.rng.weighted([1, 2, 3].filter((k) => k <= max), (k) => (k === 1 ? 3 : k === 2 ? 2 : 1));
     const span = 12 * octaves;
     const a = ctx.rng.int(36, 84 - span);
     const same = ctx.rng.bool();
@@ -356,10 +360,62 @@ function absolutePool(known: ReadonlySet<string>): Pitch[] {
  * después entre tres o cuatro, cada vez más cercanas, y cuando ya se conocen las alteraciones,
  * la nota suena en cualquier octava.
  */
+/** Notas posibles por nivel (pocas al principio, se amplían de a poco). */
+const ABS_LEVELS: Record<number, string[]> = {
+  1: ["C4", "G4"],
+  2: ["C4", "E4", "G4", "A4"],
+  3: ["C4", "D4", "E4", "F4", "G4", "A4", "B4"],
+};
+/** Con referencia (se oye Do y se lo nombra): pocas notas, a intervalos ya conocidos de Do. */
+const REF_POOL = ["E4", "G4", "A4"];
+
+function chromaticPool(known: ReadonlySet<string>): Pitch[] {
+  const out: Pitch[] = [];
+  for (const q of nameablePcs(known)) {
+    // sin Mi♯, Si♯, Fa♭ ni Do♭: se piden las notas con su nombre habitual
+    if ((q.acc === 1 && (q.letter === 2 || q.letter === 6)) || (q.acc === -1 && (q.letter === 3 || q.letter === 0))) continue;
+    const p = { ...q, octave: 4 } as Pitch;
+    if (!out.some((x) => chroma(x) === chroma(p))) out.push(p);
+  }
+  return out;
+}
+
+/** Versión por niveles (y con referencia) que usan las lecciones desde 0.5.1. */
+function absNoteLeveled(ctx: Parameters<Generator["make"]>[0], params: Record<string, unknown>): ReturnType<Generator["make"]> {
+  const level = Math.max(1, Math.min(4, Number(params.level ?? 1)));
+  const ref = params.reference ? P("C4") : null;
+  const pool = ref ? REF_POOL.map(P) : level >= 4 ? chromaticPool(ctx.known) : ABS_LEVELS[level].map(P);
+  const k = ref || level === 1 ? 2 : level === 2 ? 3 : 4;
+  const itemOf = (x: PitchClass) => `${ref ? "ear.ref" : "ear.abs"}.${x.letter}${x.acc}`;
+  const target = ctx.rng.weighted(pool, (x) => ctx.weight(itemOf(x)));
+  const dist = (x: PitchClass) => {
+    const d = Math.abs(chroma(x) - chroma(target)) % 12;
+    return Math.min(d, 12 - d);
+  };
+  const others = pool.filter((x) => dist(x) > 0);
+  // En los primeros niveles, las opciones son notas bien distintas entre sí.
+  const far = others.filter((x) => dist(x) >= 3);
+  const distract = ctx.rng.sample(ref || level <= 2 ? (far.length >= k - 1 ? far : others) : others, k - 1);
+  const played: Pitch = level >= 4 && !ref ? ({ ...target, octave: ctx.rng.int(3, 5) } as Pitch) : target;
+  return {
+    prompt: ref
+      ? { text: msg("ex.absNote.withRef", { ref: L.pc(ref) }), audio: notesSequence([ref, played], { length: 1.1, gap: 1.5 }), autoplay: true }
+      : { text: msg("ex.absNote.prompt"), audio: notesSequence([played], { length: 1.2 }), autoplay: true },
+    answer: choice(ctx.rng, L.pc(target), distract.map(L.pc), k),
+    targets: ["t.notes"],
+    uses: ["t.notes", "t.sound", ...pcLabelConcepts(target), ...distract.flatMap(pcLabelConcepts), ...(ref ? ["t.interval"] : [])],
+    item: itemOf(target),
+  };
+}
+
 export const absNote: Generator = {
   requires: ["t.notes", "t.sound"],
-  canRun: (ctx) => absolutePool(ctx.known).length > 0,
-  make(ctx) {
+  canRun: (ctx, params) => {
+    if (params.level || params.reference) return Number(params.level ?? 1) < 4 || params.reference ? true : chromaticPool(ctx.known).length > 7;
+    return absolutePool(ctx.known).length > 0;
+  },
+  make(ctx, params) {
+    if (params.level || params.reference) return absNoteLeveled(ctx, params);
     const pool = absolutePool(ctx.known);
     const pcs = uniqByChroma(pool);
     const itemOf = (x: PitchClass) => `ear.abs.${x.letter}${x.acc}`;

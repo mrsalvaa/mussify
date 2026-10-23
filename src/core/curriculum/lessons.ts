@@ -19,14 +19,17 @@ const T = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len
 // Unidad 1: el sonido
 T("sound", "t.sound", [], [g("pitchHigher")], 8);
 T("sound", "t.notes", [], [g("noteOrder"), g("nameConvert")]);
-T("sound", "t.octave", [], [g("octaveSame", undefined, 1.5), g("octaveCount"), g("octaveName", undefined, 1.5), g("noteOrder", undefined, 0.5)]);
+// El oído de octavas ("¿es la misma nota más aguda?") llega después de los intervalos (ear.reference).
+T("sound", "t.octave", [], [g("octaveName", undefined, 1.5), g("pitchHigher"), g("noteOrder", undefined, 0.5)]);
 
 // Unidad 2: pentagrama y clave de Sol
 T("staff", "t.staff", [], [g("staffPosition"), g("staffTap")]);
 T("staff", "clef.treble", [], [g("staffPosition", undefined, 0.5), g("staffTap")]);
 const READING_ORDER_TREBLE = ["G4", "A4", "F4", "B4", "E4", "C5", "D4", "C4", "D5", "E5", "F5", "G5"];
 for (const n of READING_ORDER_TREBLE) {
-  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.6), g("hearNote", undefined, 0.6), g("absNote", undefined, 0.7)]);
+  // Con una sola nota conocida (Sol), una comparación simple completa la sesión.
+  const simple = n === "G4" ? [g("staffPosition", undefined, 0.8)] : [];
+  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.6), g("hearNote", undefined, 0.6), ...simple]);
 }
 
 // Unidad 3: ritmo básico
@@ -55,17 +58,17 @@ T("rhythm", "rest.16", [], [g("figureValue"), g("rhythmRead")]);
 T("bass-clef", "clef.bass", [], []);
 const READING_ORDER_BASS = ["F3", "G3", "E3", "A3", "D3", "C4", "B3", "C3", "B2", "A2", "G2", "F2", "E2"];
 for (const n of READING_ORDER_BASS) {
-  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.5), g("hearNote", undefined, 0.5), g("absNote", undefined, 0.6)]);
+  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.5), g("hearNote", undefined, 0.5)]);
 }
-T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3), g("absNote", undefined, 0.8)]);
+T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3)]);
 
 // Unidad 5: tonos, semitonos y alteraciones
 T("accidentals", "t.keyboardMap", [], []);
 T("accidentals", "t.semitone", [], [g("toneSemitone")]);
-T("accidentals", "acc.sharp", [], [g("readNote", { accidentals: true }, 2), g("absNote", undefined, 0.8)]);
-T("accidentals", "acc.flat", [], [g("readNote", { accidentals: true }, 2), g("absNote", undefined, 0.8)]);
+T("accidentals", "acc.sharp", [], [g("readNote", { accidentals: true }, 2)]);
+T("accidentals", "acc.flat", [], [g("readNote", { accidentals: true }, 2)]);
 T("accidentals", "acc.natural", [], [g("readNote", { accidentals: true })]);
-T("accidentals", "t.enharmonic", [], [g("enharmonic", undefined, 2), g("absNote", undefined, 0.7)]);
+T("accidentals", "t.enharmonic", [], [g("enharmonic", undefined, 2)]);
 T("accidentals", "acc.double", [], []);
 
 // Unidad 6: intervalos
@@ -77,31 +80,35 @@ for (const iv of ["M3", "m3", "P4", "M2", "m2", "M6", "m6", "m7", "M7", "TT"]) {
   T("intervals", `iv.${iv}`, [], [g("intervalEar", undefined, 2), g("intervalName"), g("intervalBuild"), g("intervalSemitones", undefined, 0.5)]);
 }
 T("intervals", "iv.inversion", [], [g("intervalInvert", undefined, 2)]);
+// Puente: reconocer notas con una referencia sonora, antes de reconocerlas sin referencia.
+T("intervals", "ear.reference", [], [g("absNote", { reference: true }, 2), g("octaveSame", { maxOctaves: 1 }), g("octaveCount", undefined, 0.7)]);
 
 // Unidad 7: escalas y tonalidades
-T("keys", "sc.major", [], [g("scaleMissing"), g("scalePattern")]);
-T("keys", "t.key", [], [g("scaleMissing", undefined, 0.5)]);
-for (const f of [1, -1, 2, -2, 3, -3, 4, -4]) T("keys", `ks.${f}`, [], [g("keySignature", undefined, 2), g("keyAccidentals"), g("scaleMissing")]);
+// Notas sin referencia: pocas al principio (nivel 1) y cada vez más (hasta el nivel 4, con alteraciones).
+const abs = (level: number, w = 0.5) => g("absNote", { level }, w);
+T("keys", "sc.major", [], [g("scaleMissing"), g("scalePattern"), abs(1)]);
+T("keys", "t.key", [], [g("scaleMissing", undefined, 0.5), abs(1)]);
+for (const f of [1, -1, 2, -2, 3, -3, 4, -4]) T("keys", `ks.${f}`, [], [g("keySignature", undefined, 2), g("keyAccidentals"), g("scaleMissing"), abs(Math.abs(f) <= 2 ? 2 : 3)]);
 T("keys", "ks.far", [], [g("keySignature", undefined, 2), g("keyAccidentals")]);
 T("keys", "t.circle5", [], [g("keySignature"), g("keyAccidentals")]);
-T("keys", "sc.minor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern")]);
+T("keys", "sc.minor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern"), abs(3)]);
 T("keys", "t.relative", [], [g("relativeKey", undefined, 2), g("keySignature")]);
-T("keys", "sc.harmonicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern")]);
-T("keys", "sc.melodicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern")]);
+T("keys", "sc.harmonicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern"), abs(3)]);
+T("keys", "sc.melodicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePattern"), abs(3)]);
 
 // Unidad 8: acordes
 T("chords", "ch.maj", [], [g("chordSpell", undefined, 2)]);
 T("chords", "t.cifrado", [], [g("chordSymbolConvert", undefined, 2)]);
-T("chords", "ch.min", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead")]);
-T("chords", "ch.dim", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead")]);
-T("chords", "ch.aug", [], [g("chordEar"), g("chordSpell"), g("chordName")]);
+T("chords", "ch.min", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.dim", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.aug", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
 T("chords", "ch.inv", [], [g("chordInversion", undefined, 2)]);
-T("chords", "ch.sus", [], [g("chordEar"), g("chordSpell"), g("chordName")]);
+T("chords", "ch.sus", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
 T("chords", "ch.5", [], [g("chordSpell"), g("chordEar")]);
-T("chords", "ch.7", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead")]);
-T("chords", "ch.maj7", [], [g("chordEar"), g("chordSpell"), g("chordName")]);
-T("chords", "ch.m7", [], [g("chordEar"), g("chordSpell"), g("chordName")]);
-T("chords", "ch.m7b5", [], [g("chordEar"), g("chordSpell"), g("chordName")]);
+T("chords", "ch.7", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.maj7", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
+T("chords", "ch.m7", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
+T("chords", "ch.m7b5", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
 T("chords", "ch.dim7", [], [g("chordEar"), g("chordSpell")]);
 T("chords", "ch.6", [], [g("chordSpell"), g("chordEar")]);
 T("chords", "ch.add9", [], [g("chordSpell"), g("chordEar")]);

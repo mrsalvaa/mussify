@@ -39,7 +39,8 @@ T("rhythm", "rh.h", [], [g("figureValue"), g("figureName"), g("rhythmSum")]);
 T("rhythm", "rh.w", [], [g("figureValue"), g("figureName"), g("rhythmSum")]);
 T("rhythm", "rest.q", [], [g("figureValue")]);
 T("rhythm", "t.measure", [], []);
-T("rhythm", "ts.4/4", [], [g("measureComplete"), g("rhythmRead"), g("rhythmDictation")]);
+// Primera lección de compás: leer y completar. El dictado rítmico empieza en 3/4.
+T("rhythm", "ts.4/4", [], [g("measureComplete"), g("rhythmRead")]);
 T("rhythm", "rest.h", [], [g("figureValue"), g("measureComplete"), g("rhythmRead")]);
 T("rhythm", "rest.w", [], [g("figureValue"), g("measureComplete")]);
 T("rhythm", "ts.3/4", [], [g("measureComplete"), g("meterEar"), g("rhythmRead"), g("rhythmDictation")]);
@@ -60,7 +61,7 @@ const READING_ORDER_BASS = ["F3", "G3", "E3", "A3", "D3", "C4", "B3", "C3", "B2"
 for (const n of READING_ORDER_BASS) {
   T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.5), g("hearNote", undefined, 0.5)]);
 }
-T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3)]);
+T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3), g("hearNote")]);
 
 // Unidad 5: tonos, semitonos y alteraciones
 T("accidentals", "t.keyboardMap", [], []);

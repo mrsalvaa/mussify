@@ -37,11 +37,14 @@ Series consecutivas que hoy habilitan exactamente los mismos ejercicios con los 
 | 12 notas de clave de Sol (`read.treble.*`) y 13 de clave de Fa (`read.bass.*`) | leer en el pentagrama (`readNote`) → ubicarla tocando el pentagrama (`placeNote`) → escucharla entre dos sonidos (`hearNote`) → encontrarla entre otras (`findNote`) |
 | 10 intervalos `iv.M3` … `iv.TT` | escucharlo (`intervalEar`) → construirlo (`intervalBuild`) → leerlo en el pentagrama (`intervalName`) |
 | 8 armaduras `ks.1` … `ks.-4` | leer la armadura (`keySignature`) → decir sus alteraciones (`keyAccidentals`) → completar la escala (`scaleMissing`) |
-| Acordes `ch.min`, `ch.dim`, `ch.aug` / `ch.7`, `ch.maj7`, `ch.m7`, `ch.m7b5` / `ch.dim7`, `ch.6`, `ch.add9` | escucharlo (`chordEar`) → escribir sus notas (`chordSpell`) → nombrarlo (`chordName`) |
+| Acordes `ch.min`, `ch.dim`, `ch.aug` / `ch.7`, `ch.maj7`, `ch.m7`, `ch.m7b5` | escucharlo (`chordEar`) → escribir sus notas (`chordSpell`) → nombrarlo (`chordName`) |
+| Acordes `ch.dim7`, `ch.6`, `ch.add9` (solo tienen oído y escritura) | escucharlo (`chordEar`) ↔ escribirlo (`chordSpell`) |
 | 5 modos `mode.*` | escucharlo (`modeIdentify`) ↔ escribirlo (`scaleMissing`) |
 | Guitarra: cuerdas `gt.str.*` y notas `gt.pos.*` / bajo: `bs.str.*`, `bs.pos.*` | nombrar la nota en el diapasón (`fretName`) → encontrarla (`fretFind`) → leerla en tablatura (`tabRead`) |
 | Guitarra: acordes (`gt.ch.*`, `gt.mv.*`) | leer el diagrama (`chordDiagramName`) → armarlo (`chordShapePlay`) → escucharlo (`guitarChordEar`) |
 | Batería: piezas `dr.read.*` con lectura y oído | leer (`drumPieceRead`) ↔ escuchar (`drumPieceEar`) |
+
+En `read.treble.G4` (una sola nota conocida) se suman `staffPosition` y `staffTap` con peso bajo: dos ángulos de comparación y ubicación que evitan rachas del mismo ejercicio cuando se acaban las preguntas distintas.
 
 Dentro de cada lección, el armado de sesiones (0.5.0) ya impide más de dos ejercicios seguidos del mismo tipo cuando hay más de un tipo disponible.
 
@@ -57,3 +60,11 @@ Dentro de cada lección, el armado de sesiones (0.5.0) ya impide más de dos eje
 ## Tests
 
 Los tests de progresión, contenido, canciones e i18n no se tocan. En `tests/variety.test.ts` (agregado en 0.5.0) hay dos bloques que fijaban **dónde** aparecían los ejercicios que este ajuste mueve a propósito: "las preguntas de octava…" (miraba `t.octave`) y "reconocer notas de oído (progresivo)" (esperaba `absNote` desde `read.treble.G4`). Se actualizan para describir la nueva ubicación y la rampa por niveles. Los tests de no repetición y de variedad de la lección de Sol quedan igual.
+
+## Verificación después de aplicar
+
+Sesiones generadas con 20 semillas por lección:
+
+- La rotación funciona donde hay material: en lectura, intervalos, acordes y modos la actividad líder cambia de una lección a la siguiente, y el resto sigue presente.
+- **En las primeras armaduras (`ks.1` … `ks.-3`) y en las cuerdas de guitarra y bajo, la rotación casi no se nota.** Con pocas armaduras o notas conocidas, `keySignature`, `fretName` y `fretFind` tienen pocas preguntas distintas. El armado de sesiones no las repite, así que domina el ejercicio que más variantes tiene (`scaleMissing`, `tabRead`). Lo dejo así: forzarlo exigiría repetir preguntas.
+- **Rachas de más de dos ejercicios iguales seguidos**: no aparecen en ninguna de las lecciones tocadas. Siguen apareciendo, como antes de este ajuste, en lecciones con un solo tipo de ejercicio más un cuestionario corto. Cuando se agotan las preguntas distintas, el armado de sesiones (en `engine.ts`) relaja esa regla para completar la sesión: `t.pulse`, `rh.h`, `rest.q`, `t.tempo`, `t.semitone`, `acc.*`, `t.enharmonic`, `iv.inversion`, `sc.major`, `t.key`, `ch.maj`, `t.cifrado`, `h.field`, `h.roman`, `h.prog`, `h.field7`, `h.field.minor`, `h.modulation`, `rh.swing`, `ts.7/8`, `ts.2/2` y varias de piano, guitarra, bajo y batería. **No lo cambio**: hacerlo exige tocar el armado de sesiones del motor (fuera del alcance de este ajuste) o inventar un segundo tipo de actividad para cada una de esas lecciones. Propuesta para más adelante: que el armado termine la sesión antes en lugar de repetir, o sumar una segunda actividad a esas lecciones.

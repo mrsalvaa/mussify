@@ -9,6 +9,13 @@ const LESSONS: Lesson[] = [];
 
 const g = (gen: string, params?: Record<string, unknown>, weight?: number): ExerciseSpec => ({ gen, params, weight });
 
+/**
+ * Series de lecciones parecidas (una nota, un intervalo, una armadura...): cada lección de la serie
+ * pone adelante otro ángulo del mismo concepto (leer, ubicar, escuchar, construir...). El ángulo
+ * líder pesa 2 y el resto 1; los ejercicios habilitados no cambian.
+ */
+const lead = (angles: string[], i: number, gen: string, base = 1): number => (angles[i % angles.length] === gen ? 2 : base);
+
 function add(branch: Branch, unit: string, concept: ConceptId, requires: ConceptId[], exercises: ExerciseSpec[], length?: number) {
   LESSONS.push({ id: concept, branch, unit, concept, requires, exercises, length });
 }
@@ -26,11 +33,13 @@ T("sound", "t.octave", [], [g("octaveName", undefined, 1.5), g("pitchHigher"), g
 T("staff", "t.staff", [], [g("staffPosition"), g("staffTap")]);
 T("staff", "clef.treble", [], [g("staffPosition", undefined, 0.5), g("staffTap")]);
 const READING_ORDER_TREBLE = ["G4", "A4", "F4", "B4", "E4", "C5", "D4", "C4", "D5", "E5", "F5", "G5"];
-for (const n of READING_ORDER_TREBLE) {
+const READ_ANGLES = ["readNote", "placeNote", "hearNote", "findNote"];
+READING_ORDER_TREBLE.forEach((n, i) => {
+  const w = (gen: string) => lead(READ_ANGLES, i, gen);
   // Con una sola nota conocida (Sol), una comparación simple completa la sesión.
-  const simple = n === "G4" ? [g("staffPosition", undefined, 0.8)] : [];
-  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.6), g("hearNote", undefined, 0.6), ...simple]);
-}
+  const simple = n === "G4" ? [g("staffPosition", undefined, 0.6), g("staffTap", undefined, 0.6)] : [];
+  T("staff", `read.treble.${n}`, [], [g("readNote", { clef: "treble", accidentals: false }, w("readNote")), g("findNote", undefined, w("findNote")), g("placeNote", undefined, w("placeNote")), g("noteLine", undefined, 0.6), g("hearNote", undefined, lead(READ_ANGLES, i, "hearNote", 0.6)), ...simple]);
+});
 
 // Unidad 3: ritmo básico
 T("rhythm", "t.pulse", [], [g("pulseCount")], 8);
@@ -58,9 +67,10 @@ T("rhythm", "rest.16", [], [g("figureValue"), g("rhythmRead")]);
 // Unidad 4: clave de Fa
 T("bass-clef", "clef.bass", [], []);
 const READING_ORDER_BASS = ["F3", "G3", "E3", "A3", "D3", "C4", "B3", "C3", "B2", "A2", "G2", "F2", "E2"];
-for (const n of READING_ORDER_BASS) {
-  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, 2), g("findNote"), g("placeNote"), g("noteLine", undefined, 0.5), g("hearNote", undefined, 0.5)]);
-}
+READING_ORDER_BASS.forEach((n, i) => {
+  const w = (gen: string) => lead(READ_ANGLES, i, gen);
+  T("bass-clef", `read.bass.${n}`, [], [g("readNote", { clef: "bass", accidentals: false }, w("readNote")), g("findNote", undefined, w("findNote")), g("placeNote", undefined, w("placeNote")), g("noteLine", undefined, 0.5), g("hearNote", undefined, lead(READ_ANGLES, i, "hearNote", 0.5))]);
+});
 T("bass-clef", "ear.melodic", ["read.treble.C4", "read.treble.D4", "read.treble.E4", "read.treble.F4", "read.treble.G4"], [g("melodicDictation", undefined, 3), g("hearNote")]);
 
 // Unidad 5: tonos, semitonos y alteraciones
@@ -77,9 +87,11 @@ T("intervals", "t.interval", [], []);
 T("intervals", "iv.P8", [], [g("intervalSemitones"), g("intervalBuild")]);
 T("intervals", "iv.P5", [], [g("intervalEar"), g("intervalSemitones"), g("intervalBuild"), g("intervalName")]);
 T("intervals", "t.harmonic", [], [g("intervalEar", { modes: ["harm"] }), g("intervalName")]);
-for (const iv of ["M3", "m3", "P4", "M2", "m2", "M6", "m6", "m7", "M7", "TT"]) {
-  T("intervals", `iv.${iv}`, [], [g("intervalEar", undefined, 2), g("intervalName"), g("intervalBuild"), g("intervalSemitones", undefined, 0.5)]);
-}
+const IV_ANGLES = ["intervalEar", "intervalBuild", "intervalName"];
+["M3", "m3", "P4", "M2", "m2", "M6", "m6", "m7", "M7", "TT"].forEach((iv, i) => {
+  const w = (gen: string) => lead(IV_ANGLES, i, gen);
+  T("intervals", `iv.${iv}`, [], [g("intervalEar", undefined, w("intervalEar")), g("intervalName", undefined, w("intervalName")), g("intervalBuild", undefined, w("intervalBuild")), g("intervalSemitones", undefined, 0.5)]);
+});
 T("intervals", "iv.inversion", [], [g("intervalInvert", undefined, 2)]);
 // Puente: reconocer notas con una referencia sonora, antes de reconocerlas sin referencia.
 T("intervals", "ear.reference", [], [g("absNote", { reference: true }, 2), g("octaveSame", { maxOctaves: 1 }), g("octaveCount", undefined, 0.7)]);
@@ -89,7 +101,11 @@ T("intervals", "ear.reference", [], [g("absNote", { reference: true }, 2), g("oc
 const abs = (level: number, w = 0.5) => g("absNote", { level }, w);
 T("keys", "sc.major", [], [g("scaleMissing"), g("scalePattern"), abs(1)]);
 T("keys", "t.key", [], [g("scaleMissing", undefined, 0.5), abs(1)]);
-for (const f of [1, -1, 2, -2, 3, -3, 4, -4]) T("keys", `ks.${f}`, [], [g("keySignature", undefined, 2), g("keyAccidentals"), g("scaleMissing"), abs(Math.abs(f) <= 2 ? 2 : 3)]);
+const KS_ANGLES = ["keySignature", "keyAccidentals", "scaleMissing"];
+[1, -1, 2, -2, 3, -3, 4, -4].forEach((f, i) => {
+  const w = (gen: string) => lead(KS_ANGLES, i, gen);
+  T("keys", `ks.${f}`, [], [g("keySignature", undefined, w("keySignature")), g("keyAccidentals", undefined, w("keyAccidentals")), g("scaleMissing", undefined, w("scaleMissing")), abs(Math.abs(f) <= 2 ? 2 : 3)]);
+});
 // El círculo de quintas (la regla para deducir armaduras) antes de las seis armaduras lejanas.
 T("keys", "t.circle5", [], [g("keySignature"), g("keyAccidentals")]);
 T("keys", "ks.far", [], [g("keySignature", undefined, 2), g("keyAccidentals")]);
@@ -101,19 +117,22 @@ T("keys", "sc.melodicMinor", [], [g("scaleMissing"), g("scaleEar"), g("scalePatt
 // Unidad 8: acordes
 T("chords", "ch.maj", [], [g("chordSpell", undefined, 2)]);
 T("chords", "t.cifrado", [], [g("chordSymbolConvert", undefined, 2)]);
-T("chords", "ch.min", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
-T("chords", "ch.dim", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
-T("chords", "ch.aug", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
+const CH_ANGLES = ["chordEar", "chordSpell", "chordName"];
+const chw = (i: number, gen: string, angles = CH_ANGLES) => g(gen, undefined, lead(angles, i, gen));
+T("chords", "ch.min", [], [chw(0, "chordEar"), chw(0, "chordSpell"), chw(0, "chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.dim", [], [chw(1, "chordEar"), chw(1, "chordSpell"), chw(1, "chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.aug", [], [chw(2, "chordEar"), chw(2, "chordSpell"), chw(2, "chordName"), abs(4, 0.4)]);
 T("chords", "ch.inv", [], [g("chordInversion", undefined, 2)]);
 T("chords", "ch.sus", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
 T("chords", "ch.5", [], [g("chordSpell"), g("chordEar")]);
-T("chords", "ch.7", [], [g("chordEar"), g("chordSpell"), g("chordName"), g("chordRead"), abs(4, 0.4)]);
-T("chords", "ch.maj7", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
-T("chords", "ch.m7", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
-T("chords", "ch.m7b5", [], [g("chordEar"), g("chordSpell"), g("chordName"), abs(4, 0.4)]);
-T("chords", "ch.dim7", [], [g("chordEar"), g("chordSpell")]);
-T("chords", "ch.6", [], [g("chordSpell"), g("chordEar")]);
-T("chords", "ch.add9", [], [g("chordSpell"), g("chordEar")]);
+T("chords", "ch.7", [], [chw(0, "chordEar"), chw(0, "chordSpell"), chw(0, "chordName"), g("chordRead"), abs(4, 0.4)]);
+T("chords", "ch.maj7", [], [chw(1, "chordEar"), chw(1, "chordSpell"), chw(1, "chordName"), abs(4, 0.4)]);
+T("chords", "ch.m7", [], [chw(2, "chordEar"), chw(2, "chordSpell"), chw(2, "chordName"), abs(4, 0.4)]);
+T("chords", "ch.m7b5", [], [chw(3, "chordEar"), chw(3, "chordSpell"), chw(3, "chordName"), abs(4, 0.4)]);
+const CH2 = ["chordEar", "chordSpell"];
+T("chords", "ch.dim7", [], [chw(0, "chordEar", CH2), chw(0, "chordSpell", CH2)]);
+T("chords", "ch.6", [], [chw(1, "chordSpell", CH2), chw(1, "chordEar", CH2)]);
+T("chords", "ch.add9", [], [chw(2, "chordSpell", CH2), chw(2, "chordEar", CH2)]);
 T("chords", "ch.ext", [], [g("chordSpell")]);
 T("chords", "ch.slash", [], []);
 
@@ -139,7 +158,8 @@ T("rock", "sc.pentMajor", [], [g("scaleMissing"), g("scaleEar")]);
 T("rock", "sc.blues", [], [g("scaleMissing"), g("scaleEar")]);
 T("rock", "h.blues12", ["ch.7"], []);
 T("rock", "mode.intro", [], []);
-for (const m of ["dorian", "mixolydian", "phrygian", "lydian", "locrian"]) T("rock", `mode.${m}`, [], [g("modeIdentify", undefined, 2), g("scaleMissing", undefined, 0.5)]);
+const MODE_ANGLES = ["modeIdentify", "scaleMissing"];
+["dorian", "mixolydian", "phrygian", "lydian", "locrian"].forEach((m, i) => T("rock", `mode.${m}`, [], [g("modeIdentify", undefined, lead(MODE_ANGLES, i, "modeIdentify")), g("scaleMissing", undefined, lead(MODE_ANGLES, i, "scaleMissing"))]));
 
 // Unidad 11: ritmo avanzado
 T("rhythm2", "ts.6/8", [], [g("meterEar"), g("rhythmRead"), g("rhythmDictation"), g("measureComplete")]);
@@ -190,49 +210,53 @@ PN("style", "pn.voicing", ["h.field7"], [g("playChord"), g("degreeChord")]);
 
 // ============================ GUITARRA ============================
 const GT = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("guitar", unit, c, req, ex, len);
-const gtFret = [g("fretName", { instrument: "guitar" }, 2), g("fretFind", { instrument: "guitar" }), g("tabRead", { instrument: "guitar" })];
-const gtChord = [g("chordDiagramName", undefined, 2), g("chordShapePlay", undefined, 2), g("guitarChordEar")];
+const FRET_ANGLES = ["fretName", "fretFind", "tabRead"];
+const CHORD_ANGLES = ["chordDiagramName", "chordShapePlay", "guitarChordEar"];
+let gtFretN = 0, gtChordN = 0;
+// Cada lección de notas o de acordes toma el siguiente ángulo de la serie.
+const gtFretNext = () => { const i = gtFretN++; return FRET_ANGLES.map((gen) => g(gen, { instrument: "guitar" }, lead(FRET_ANGLES, i, gen))); };
+const gtChordNext = () => { const i = gtChordN++; return CHORD_ANGLES.map((gen) => g(gen, undefined, lead(CHORD_ANGLES, i, gen))); };
 GT("basics", "gt.parts", ["t.octave"], []);
 GT("basics", "gt.tab", [], []);
-for (const s of [6, 1, 5, 4, 3, 2]) GT("basics", `gt.str.${s}`, [], gtFret);
-GT("first-chords", "gt.ch.Em", [], gtChord);
-GT("first-chords", "gt.ch.E", [], gtChord);
-GT("first-position", "gt.pos.1.1", [], gtFret);
-GT("first-position", "gt.pos.1.3", [], gtFret);
-GT("first-chords", "gt.ch.Am", [], gtChord);
-GT("first-chords", "gt.ch.A", [], gtChord);
-GT("first-position", "gt.pos.2.1", [], gtFret);
-GT("first-position", "gt.pos.2.3", [], gtFret);
+for (const s of [6, 1, 5, 4, 3, 2]) GT("basics", `gt.str.${s}`, [], gtFretNext());
+GT("first-chords", "gt.ch.Em", [], gtChordNext());
+GT("first-chords", "gt.ch.E", [], gtChordNext());
+GT("first-position", "gt.pos.1.1", [], gtFretNext());
+GT("first-position", "gt.pos.1.3", [], gtFretNext());
+GT("first-chords", "gt.ch.Am", [], gtChordNext());
+GT("first-chords", "gt.ch.A", [], gtChordNext());
+GT("first-position", "gt.pos.2.1", [], gtFretNext());
+GT("first-position", "gt.pos.2.3", [], gtFretNext());
 GT("first-chords", "gt.strum", ["rh.q", "ts.4/4"], [g("chordShapePlay"), g("rhythmRead")]);
-GT("first-chords", "gt.ch.D", [], gtChord);
-GT("first-position", "gt.pos.3.2", [], gtFret);
-GT("first-chords", "gt.ch.G", [], gtChord);
-GT("first-position", "gt.pos.4.2", [], gtFret);
-GT("first-position", "gt.pos.4.3", [], gtFret);
-GT("first-chords", "gt.ch.C", [], gtChord);
-GT("first-position", "gt.pos.5.2", [], gtFret);
-GT("first-position", "gt.pos.5.3", [], gtFret);
-GT("first-chords", "gt.ch.Dm", [], gtChord);
-GT("first-position", "gt.pos.6.1", [], gtFret);
-GT("first-position", "gt.pos.6.3", [], gtFret);
+GT("first-chords", "gt.ch.D", [], gtChordNext());
+GT("first-position", "gt.pos.3.2", [], gtFretNext());
+GT("first-chords", "gt.ch.G", [], gtChordNext());
+GT("first-position", "gt.pos.4.2", [], gtFretNext());
+GT("first-position", "gt.pos.4.3", [], gtFretNext());
+GT("first-chords", "gt.ch.C", [], gtChordNext());
+GT("first-position", "gt.pos.5.2", [], gtFretNext());
+GT("first-position", "gt.pos.5.3", [], gtFretNext());
+GT("first-chords", "gt.ch.Dm", [], gtChordNext());
+GT("first-position", "gt.pos.6.1", [], gtFretNext());
+GT("first-position", "gt.pos.6.3", [], gtFretNext());
 GT("first-chords", "gt.change", [], [g("chordDiagramName"), g("chordShapePlay", undefined, 2)]);
-for (const c of ["E7", "A7", "D7", "G7", "B7"]) GT("sevenths", `gt.ch.${c}`, [], gtChord);
+for (const c of ["E7", "A7", "D7", "G7", "B7"]) GT("sevenths", `gt.ch.${c}`, [], gtChordNext());
 GT("rock", "gt.strum8", ["rh.8"], [g("chordShapePlay"), g("rhythmRead")]);
-GT("rock", "gt.mv.power6", [], gtChord);
-GT("rock", "gt.mv.power5", [], gtChord);
+GT("rock", "gt.mv.power6", [], gtChordNext());
+GT("rock", "gt.mv.power5", [], gtChordNext());
 GT("rock", "gt.palm", [], [g("chordShapePlay")]);
-GT("rock", "gt.chromatic", ["acc.sharp", "acc.flat"], gtFret);
-for (const c of ["Am7", "Em7", "Cadd9", "Asus4", "Dsus4", "Fmaj7"]) GT("colors", `gt.ch.${c}`, [], gtChord);
-GT("barre", "gt.mv.E", [], gtChord);
-GT("barre", "gt.mv.Em", [], gtChord);
-GT("barre", "gt.mv.A", [], gtChord);
-GT("barre", "gt.mv.Am", [], gtChord);
-GT("barre", "gt.mv.E7", [], gtChord);
-GT("barre", "gt.mv.A7", [], gtChord);
-GT("barre", "gt.mv.Em7", [], gtChord);
-GT("barre", "gt.mv.Am7", [], gtChord);
-GT("fretboard", "gt.zone.5", [], gtFret);
-GT("fretboard", "gt.zone.10", [], gtFret);
+GT("rock", "gt.chromatic", ["acc.sharp", "acc.flat"], gtFretNext());
+for (const c of ["Am7", "Em7", "Cadd9", "Asus4", "Dsus4", "Fmaj7"]) GT("colors", `gt.ch.${c}`, [], gtChordNext());
+GT("barre", "gt.mv.E", [], gtChordNext());
+GT("barre", "gt.mv.Em", [], gtChordNext());
+GT("barre", "gt.mv.A", [], gtChordNext());
+GT("barre", "gt.mv.Am", [], gtChordNext());
+GT("barre", "gt.mv.E7", [], gtChordNext());
+GT("barre", "gt.mv.A7", [], gtChordNext());
+GT("barre", "gt.mv.Em7", [], gtChordNext());
+GT("barre", "gt.mv.Am7", [], gtChordNext());
+GT("fretboard", "gt.zone.5", [], gtFretNext());
+GT("fretboard", "gt.zone.10", [], gtFretNext());
 GT("solo", "gt.pent", ["sc.pentMinor"], [g("fretScale", { instrument: "guitar" }, 2)]);
 GT("solo", "gt.legato", [], [g("fretScale", { instrument: "guitar" })]);
 GT("solo", "gt.bend", [], [g("fretScale", { instrument: "guitar" })]);
@@ -241,30 +265,31 @@ GT("solo", "gt.slash", ["ch.slash"], [g("chordDiagramName")]);
 
 // ============================ BAJO ============================
 const BS = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], len?: number) => add("bass", unit, c, req, ex, len);
-const bsFret = [g("fretName", { instrument: "bass" }, 2), g("fretFind", { instrument: "bass" }), g("tabRead", { instrument: "bass" })];
+let bsFretN = 0;
+const bsFretNext = () => { const i = bsFretN++; return FRET_ANGLES.map((gen) => g(gen, { instrument: "bass" }, lead(FRET_ANGLES, i, gen))); };
 BS("basics", "bs.parts", ["t.octave"], []);
 BS("basics", "bs.tab", [], []);
-for (const s of [4, 3, 2, 1]) BS("basics", `bs.str.${s}`, [], bsFret);
-BS("first-position", "bs.pos.4.1", [], bsFret);
-BS("first-position", "bs.pos.4.3", [], bsFret);
-BS("first-position", "bs.pos.3.2", [], bsFret);
-BS("first-position", "bs.pos.3.3", [], bsFret);
+for (const s of [4, 3, 2, 1]) BS("basics", `bs.str.${s}`, [], bsFretNext());
+BS("first-position", "bs.pos.4.1", [], bsFretNext());
+BS("first-position", "bs.pos.4.3", [], bsFretNext());
+BS("first-position", "bs.pos.3.2", [], bsFretNext());
+BS("first-position", "bs.pos.3.3", [], bsFretNext());
 BS("grooves", "bs.root", [], [g("bassRoot", undefined, 2), g("fretName", { instrument: "bass" })]);
-BS("first-position", "bs.pos.2.2", [], bsFret);
-BS("first-position", "bs.pos.2.3", [], bsFret);
-BS("first-position", "bs.pos.1.2", [], bsFret);
-BS("first-position", "bs.pos.1.4", [], bsFret);
+BS("first-position", "bs.pos.2.2", [], bsFretNext());
+BS("first-position", "bs.pos.2.3", [], bsFretNext());
+BS("first-position", "bs.pos.1.2", [], bsFretNext());
+BS("first-position", "bs.pos.1.4", [], bsFretNext());
 BS("grooves", "bs.eighths", ["rh.8", "ts.4/4"], [g("tabRead", { instrument: "bass" }, 2), g("bassRoot")]);
 BS("grooves", "bs.minor", [], [g("bassRoot", undefined, 2)]);
 BS("grooves", "bs.octave", [], [g("bassShape", undefined, 2), g("bassRoot")]);
 BS("grooves", "bs.fifth", [], [g("bassShape", undefined, 2)]);
-BS("fretboard", "bs.chromatic", ["acc.sharp", "acc.flat"], bsFret);
-BS("fretboard", "bs.zone.5", [], bsFret);
-BS("fretboard", "bs.zone.10", [], bsFret);
+BS("fretboard", "bs.chromatic", ["acc.sharp", "acc.flat"], bsFretNext());
+BS("fretboard", "bs.zone.5", [], bsFretNext());
+BS("fretboard", "bs.zone.10", [], bsFretNext());
 BS("lines", "bs.pent", ["sc.pentMinor"], [g("fretScale", { instrument: "bass" }, 2)]);
 BS("lines", "bs.approach", ["t.semitone"], [g("bassRoot")]);
 BS("lines", "bs.walk", ["h.iiVI"], [g("bassRoot"), g("progressionEar")]);
-BS("lines", "bs.str5", [], bsFret);
+BS("lines", "bs.str5", [], bsFretNext());
 BS("technique", "bs.ghost", [], [g("bassShape")]);
 BS("technique", "bs.slap", [], [g("bassShape")]);
 
@@ -273,23 +298,25 @@ const DR = (unit: string, c: ConceptId, req: ConceptId[], ex: ExerciseSpec[], le
 DR("kit", "dr.kit", ["t.sound"], []);
 DR("kit", "clef.percussion", ["t.staff"], []);
 DR("kit", "dr.read.kick", ["rh.q"], [g("drumPieceRead", undefined, 2)]);
-DR("kit", "dr.read.snare", [], [g("drumPieceRead", undefined, 2), g("drumPieceEar")]);
-DR("kit", "dr.read.hhClosed", [], [g("drumPieceRead", undefined, 2), g("drumPieceEar")]);
+const DRUM_ANGLES = ["drumPieceRead", "drumPieceEar"];
+const drw = (i: number) => DRUM_ANGLES.map((gen) => g(gen, undefined, lead(DRUM_ANGLES, i, gen)));
+DR("kit", "dr.read.snare", [], drw(0));
+DR("kit", "dr.read.hhClosed", [], drw(1));
 DR("grooves", "dr.groove.q", ["rh.q", "ts.4/4"], [g("grooveRead", undefined, 2), g("drumPieceEar")]);
 DR("grooves", "dr.groove.8", ["rh.8"], [g("grooveEar", undefined, 2), g("grooveRead")]);
 DR("grooves", "dr.read.crash", [], [g("drumPieceRead"), g("drumPieceEar"), g("grooveEar")]);
 DR("grooves", "dr.fill", ["rest.8"], [g("grooveEar", undefined, 2), g("grooveRead")]);
-DR("toms", "dr.read.tomHigh", [], [g("drumPieceRead"), g("drumPieceEar")]);
-DR("toms", "dr.read.tomMid", [], [g("drumPieceRead"), g("drumPieceEar")]);
-DR("toms", "dr.read.tomFloor", [], [g("drumPieceRead"), g("drumPieceEar")]);
+DR("toms", "dr.read.tomHigh", [], drw(0));
+DR("toms", "dr.read.tomMid", [], drw(1));
+DR("toms", "dr.read.tomFloor", [], drw(0));
 DR("toms", "dr.fill.toms", [], [g("grooveEar", undefined, 2), g("grooveRead")]);
 DR("grooves2", "dr.groove.kick", [], [g("grooveEar", undefined, 2), g("grooveRead")]);
 DR("grooves2", "dr.read.hhOpen", [], [g("drumPieceRead"), g("grooveEar", undefined, 2)]);
 DR("grooves2", "dr.read.ride", [], [g("drumPieceRead"), g("grooveEar", undefined, 2)]);
 DR("grooves2", "dr.groove.half", [], [g("grooveEar", undefined, 2), g("grooveRead")]);
 DR("grooves2", "dr.groove.16", ["rh.16"], [g("grooveEar", undefined, 2), g("grooveRead")]);
-DR("grooves2", "dr.read.hhPedal", [], [g("drumPieceRead"), g("drumPieceEar")]);
-DR("grooves2", "dr.read.sideStick", [], [g("drumPieceRead"), g("drumPieceEar")]);
+DR("grooves2", "dr.read.hhPedal", [], drw(1));
+DR("grooves2", "dr.read.sideStick", [], drw(0));
 DR("advanced", "dr.ghost", [], [g("grooveEar")]);
 DR("advanced", "dr.shuffle", ["rh.triplet", "rh.swing"], [g("grooveEar")]);
 DR("advanced", "dr.groove.68", ["ts.6/8"], [g("grooveEar", undefined, 2), g("grooveRead")]);

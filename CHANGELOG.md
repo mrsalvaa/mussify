@@ -2,7 +2,7 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
-## [Sin publicar]
+## [0.6.0] - 2026-10-22
 
 Ajuste de la curva de aprendizaje (detalle en `docs/learning-curve-audit.md`). No cambia ningún id ni el formato de los datos guardados.
 

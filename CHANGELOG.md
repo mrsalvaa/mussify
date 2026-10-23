@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versionado [SemVer](https://semver.org/lang/es/).
 
+## [0.6.1] - 2026-10-22
+
+### Corregido
+- Android: al tocar el pentagrama ya no aparece un borde naranja alrededor (el resaltado de toque y el contorno de foco del navegador). Con teclado se sigue viendo el contorno de foco de la app.
+
 ## [0.6.0] - 2026-10-22
 
 Ajuste de la curva de aprendizaje (detalle en `docs/learning-curve-audit.md`). No cambia ningún id ni el formato de los datos guardados.

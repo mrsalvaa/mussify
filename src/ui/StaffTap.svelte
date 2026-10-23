@@ -99,9 +99,15 @@
     margin: 0 auto;
     cursor: pointer;
     touch-action: manipulation;
+    /* sin el resaltado naranja que Android dibuja al tocar */
+    -webkit-tap-highlight-color: transparent;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
+  }
+  /* el contorno de foco solo con teclado, no al tocar con el dedo o el mouse */
+  .staff-tap:focus:not(:focus-visible) {
+    outline: none;
   }
   .staff-tap:focus-visible {
     outline: 2px solid var(--accent);
